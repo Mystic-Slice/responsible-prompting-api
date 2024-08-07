@@ -1,3 +1,5 @@
+[![Build Status](https://app.travis-ci.com/IBM/responsible-prompting-api.svg?token=3QHapyMs1C2MgHcEzaRi&branch=main)](https://app.travis-ci.com/IBM/responsible-prompting-api)
+
 <!-- This should be the location of the title of the repository, normally the short name -->
 # responsible-prompting-api
 
