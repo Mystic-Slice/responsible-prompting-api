@@ -1,4 +1,5 @@
 [![Build Status](https://app.travis-ci.com/IBM/responsible-prompting-api.svg?token=3QHapyMs1C2MgHcEzaRi&branch=main)](https://app.travis-ci.com/IBM/responsible-prompting-api)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 <!-- This should be the location of the title of the repository, normally the short name -->
 # responsible-prompting-api
