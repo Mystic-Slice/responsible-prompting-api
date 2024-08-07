@@ -1,13 +1,13 @@
 <!-- This should be the location of the title of the repository, normally the short name -->
-# repo-template
+# responsible-prompting-api
 
 <!-- Build Status, is a great thing to have at the top of your repository, it shows that you take your CI/CD as first class citizens -->
 <!-- [![Build Status](https://travis-ci.org/jjasghar/ibm-cloud-cli.svg?branch=master)](https://travis-ci.org/jjasghar/ibm-cloud-cli) -->
 
 <!-- Not always needed, but a scope helps the user understand in a short sentance like below, why this repo exists -->
-## Scope
+## Responsible prompting API
 
-The purpose of this project is to provide a template for new open source repositories.
+Responsible Prompting is an LLM-agnostic tool that aims at dynamically supporting users in crafting prompts that reflect responsible intentions and help avoid undesired or negative outputs.
 
 <!-- A more detailed Usage or detailed explaination of the repository here -->
 ## Usage
@@ -56,22 +56,22 @@ example:
 
 ## License
 
-All source files must include a Copyright and License header. The SPDX license header is 
-preferred because it can be easily scanned.
+<!-- All source files must include a Copyright and License header. The SPDX license header is 
+preferred because it can be easily scanned. -->
 
 If you would like to see the detailed LICENSE click [here](LICENSE).
 
 ```text
 #
-# Copyright IBM Corp. {Year project was created} - {Current Year}
+# Copyright IBM Corp. 2023 - 2024
 # SPDX-License-Identifier: Apache-2.0
 #
 ```
 ## Authors
 
-Optionally, you may include a list of authors, though this is redundant with the built-in
-GitHub list of contributors.
-
-- Author: New OpenSource IBMer <new-opensource-ibmer@ibm.com>
+- Author: Vagner Santana vsantana@ibm.com
+- Author: Melina Alberio
+- Author: Cássia Sanctos csamp@ibm.com
+- Author: Tiago Machado Tiago.Machado@ibm.com
 
 [issues]: https://github.com/IBM/repo-template/issues/new
