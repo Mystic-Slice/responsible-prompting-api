@@ -1,7 +1,6 @@
 language: python
 python:
   - "3.9"
-  - "pypy"
   
 before_install:
   - echo "#"
