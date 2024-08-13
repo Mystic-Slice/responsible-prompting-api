@@ -33,7 +33,7 @@ HF_TOKEN= <include-token-here>
 1. If not, generate a Hugging Face access token: https://huggingface.co/docs/hub/en/security-tokens
 2. In line 140 of [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html), replace `<include-token-here>` with your hugging face access token: 
 ```
-headers: {"Authorization": "Bearer <include-token-here>"},
+headers: {"Authorization": "Bearer <include-token-here>"}
 ```
 3. Run the server (if it is not already running)
 4. In your browser, access: http://127.0.0.1:8080/static/demo/index.html
