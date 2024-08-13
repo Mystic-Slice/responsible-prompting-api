@@ -121,7 +121,7 @@ This is the current structure of the repository files:
 ├── README.md
 ├── SECURITY.md
 ├── app.py
-├── config.py
+├── config.py (swagger config file)
 ├── control
 │   └── recommendation_handler.py
 ├── helpers
