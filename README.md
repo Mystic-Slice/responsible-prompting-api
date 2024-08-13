@@ -18,6 +18,11 @@ This short tutorial assumes that you have:
 2. Create a virtual environment with `python -m venv <name-of-your-venv>` 
 3. Activate your virtual environment with `source <name-of-your-venv>/bin/activate`
 4. Execute `pip install -r requirements.txt` to install project requirements
+5. Generate a Hugging Face access token: https://huggingface.co/docs/hub/en/security-tokens
+6. In the `.env` file, replace `<include-token-here>` with your hugging face access token: 
+```
+HF_TOKEN= <include-token-here>
+```
 5. Execute `python app.py`
 6. Check if the message `* Serving Flask app 'app'` appears and you are good to go!
 7. In your browser, access http://127.0.0.1:8080/ and you will see the message 'Ready!'
@@ -25,10 +30,10 @@ This short tutorial assumes that you have:
 ### Running the demo and accessing server routes
 
 #### Steps to run the demo
-1. Generate a Hugging Face access token: https://huggingface.co/docs/hub/en/security-tokens
-2. In the `.env` file, replace `<include-token-here>` for your hugging face access token: 
+1. If not, generate a Hugging Face access token: https://huggingface.co/docs/hub/en/security-tokens
+2. In line 140 of [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html), replace `<include-token-here>` with your hugging face access token: 
 ```
-HF_TOKEN= <include-token-here>
+headers: {"Authorization": "Bearer <include-token-here>"},
 ```
 3. Run the server (if it is not already running)
 4. In your browser, access: http://127.0.0.1:8080/static/demo/index.html
