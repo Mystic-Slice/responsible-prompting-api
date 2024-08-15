@@ -138,19 +138,19 @@
             const api_url = "https://api-inference.huggingface.co/models/"+model_id;
             $.ajax({
                 type: "POST",
-                headers: {"Authorization": "Bearer <include-token-here>"},
+                headers: {"Authorization": "Bearer <include-token-here>", "Content-Type": "application/json"},
                 url: api_url,
                 data: JSON.stringify({
-                                "inputs":  $( "#prompt" ).val(),
+                                "inputs": $("#prompt").val(),
                                 "parameters": {
                                     "temperature": temperature,
                                     "max_new_tokens": max_new_tokens}
                             }),
                 crossDomain: true,
-                success: function( data ){
-                    data = JSON.parse( data ) ; 
-                    console.log(data)
-                    out = data.results[0].generated_text.split( "" ) ;
+                success: function(data){
+                    //data = JSON.parse(data); 
+                    console.log(data);
+                    out = data[0].generated_text.split( "" ) ;
                     // console.debug( out ) ;
                     // $( "#outcome" ).val( out ) ;
                     $( "#outcome" ).append( "\n\n+ ------------------------------------\n| Model: " + model_id + "\n| Temperature: " + temperature + "\n| Max new tokens: " + max_new_tokens + "\n+ ------------------------------------\n\n" ) ;
