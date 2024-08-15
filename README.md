@@ -168,7 +168,7 @@ The following are OPTIONAL, but strongly suggested to have in your repository.
 These may be copied into a new or existing project to make it easier for developers not on a project team to collaborate.-->
 
 <!-- A notes section is useful for anything that isn't covered in the Usage or Scope. Like what we have below. -->
-## Notes
+## How to contribute
 
 <!-- **NOTE: While this boilerplate project uses the Apache 2.0 license, when
 establishing a new repo using this template, please use the
