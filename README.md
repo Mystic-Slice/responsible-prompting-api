@@ -38,6 +38,9 @@ headers: {"Authorization": "Bearer <include-token-here>"}
 3. Run the server (if it is not already running)
 4. In your browser, access: http://127.0.0.1:8080/static/demo/index.html
 
+> [!NOTE]  
+> In case you wish to make requests to other APIs, you can change the `$ajax` call in line 138 of [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html). Remember to also make sure that the json data (in line 142) follows the specifications of the LLM being used.
+
 ### Check the API swagger
 1. Run the server (if it is not already running)
 2. In your browser, access: http://127.0.0.1:8080/swagger
