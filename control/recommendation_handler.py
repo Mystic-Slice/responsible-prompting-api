@@ -151,13 +151,14 @@ def get_distance(embedding1, embedding2):
 
 def sort_by_similarity(e):
     """
-    Function that sorts by similarity.
+    Function that is used as a key when
+    built-in sort() is called. 
 
     Args:
-        e:
+        e: element.
 
     Returns:
-        Sorted by similarity values.
+        Similarity value of an element.
 
     Raises:
         Nothing.
