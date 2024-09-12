@@ -16,7 +16,7 @@
 # limitations under the License.
 
 """
-Swagger configuration.
+Swagger configuration
 """
 
 __author__ = "Vagner Santana, Melina Alberio, Cassia Sanctos and Tiago Machado"
