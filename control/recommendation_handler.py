@@ -264,3 +264,43 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
     out['remove'] = sorted( out['remove'], key=sort_by_similarity, reverse=True)
     out['remove'] = out['remove'][0:5]
     return out
+                       
+def get_thresholds(prompts, prompt_json, api_url, headers, model_id = 'sentence-transformers/all-minilm-l6-v2'):
+    """
+    Function that recommends thresholds given an array of prompts.
+
+    Args:
+        prompts: The array with samples of prompts to be used in the system.
+        prompt_json: Sentences to be forwarded to the recommendation endpoint.
+        model_id: Id of the model, the default value is all-minilm-l6-v2 model.
+
+    Returns:
+        A map with thresholds for the sample prompts and the informed model.
+
+    Raises:
+        Nothing.
+    """
+    # Array limits for retrieving the thresholds
+    # if( len( prompts ) < 10 or len( prompts ) > 30 ):
+    #     return -1
+    add_similarities = []
+    remove_similarities = []
+
+    for p_id, p in enumerate(prompts):
+        out = recommend_prompt(p, prompt_json, api_url, headers, 0, 1, 0, 0, model_id) # Wider possible range
+
+        for r in out['add']:
+            add_similarities.append(r['similarity'])
+        for r in out['remove']:
+            remove_similarities.append(r['similarity'])
+
+    add_similarities_df = pd.DataFrame({'similarity': add_similarities})
+    remove_similarities_df = pd.DataFrame({'similarity': remove_similarities})
+
+    thresholds = {}
+    thresholds['add_lower_threshold'] = round(add_similarities_df.describe([.1]).loc['10%', 'similarity'], 1)
+    thresholds['add_higher_threshold'] = round(add_similarities_df.describe([.9]).loc['90%', 'similarity'], 1)
+    thresholds['upper_lower_threshold'] = round(remove_similarities_df.describe([.1]).loc['10%', 'similarity'], 1)
+    thresholds['upper_higher_threshold'] = round(remove_similarities_df.describe([.9]).loc['90%', 'similarity'], 1)
+
+    return thresholds
