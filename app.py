@@ -51,6 +51,18 @@ def recommend():
     prompt = args.get("prompt")
     recommendation_json = recommendation_handler.recommend_prompt(prompt, prompt_json, api_url, headers)
     return recommendation_json
+
+@app.route("/get_thresholds", methods=['GET'])
+@cross_origin()
+def get_thresholds():
+    api_url, headers = get_credentials.get_credentials()
+    prompt_json = recommendation_handler.populate_json()
+    args = request.args
+    print("args list = ", args)
+    prompts = args.get("prompts")
+    thresholds_json = recommendation_handler.get_thresholds(prompts, prompt_json, api_url, 
+                                                            headers, model_id = 'sentence-transformers/all-minilm-l6-v2')
+    return thresholds_json
         
 if __name__=='__main__':
 	app.run(host='0.0.0.0', port='8080', debug=True)
