@@ -4,6 +4,18 @@
 # Responsible prompting API
 Responsible Prompting is an LLM-agnostic tool that aims at dynamically supporting users in crafting prompts that reflect responsible intentions and help avoid undesired or negative outputs.
 
+
+1. [Usage of the API](#usage)
+2. [How to run the server in your machine](#instructions-on-how-to-run-the-server-locally)
+3. [Start the server: step by step](#steps-to-start-the-server)
+4. [Running the demo and accessing routes](#running-the-demo-and-accessing-server-routes)
+5. [Customize sentences](#customize-sentences)
+6. [Repo file structure](#file-structure)
+7. [Contribute](#how-to-contribute)
+8. [License](#license)
+9. [Authors](#authors)
+
+
 ## Usage
 This API is composed by a `Flask server` that hosts the `recommend`, `recommend_local`, `get_thresholds` routes, the `swagger` files and a responsible prompting `demo`.
 You can run the server locally to execute requests and obtain responsible prompting recommendations according to `swagger` description.
