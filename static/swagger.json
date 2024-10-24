@@ -93,7 +93,7 @@
         "tags": [
           "thresholds"
         ],
-        "summary": "Function that recommends thresholds given an array of prompts.",
+        "summary": "Function that recommends thresholds given an array of prompts",
         "description": "Given an input array of prompts, returns thresholds for a selected model.",
         "parameters": [
           {
@@ -126,7 +126,94 @@
           }
         }
       }
+    },
+    "/recommend_local": {
+      "get": {
+        "tags": [
+          "recommend_local"
+        ],
+        "summary": "Obtain responsible prompt recommendations from a model running locally",
+        "description": "Given an input prompt with one or more sentences, returns up to five recommendations of sentences and its respective positive value representations to be added at the end of the input prompt, and up to five recommendations for removal of potentially harmful sentences in the given input prompt.",
+        "parameters": [
+          {
+            "name": "prompt",
+            "in": "query",
+            "description": "Provide an input prompt that will be sent to a local LLM. Note that this recommendation is performed at prompting time and this model is not generating content. It uses a curated dataset of values and prompts to compute the similarity to the input sentences provided and the dataset sentences. Please note that similarity informed is cosine similarity. Please note that the index informed in the removal recommendations is 0-indexed.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "add_lower_threshold",
+            "in": "header",
+            "description": "The lower threshold is used to select centroids of sentences based on the similarity of the provided input and the centroid of existing clusters of sentences based on values. The default value for the lower threshold is 0.3",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0.3"
+          },
+          {
+            "name": "add_upper_threshold",
+            "in": "header",
+            "description": "The upper sentence threshold is being used as a ceiling value to avoid redundance, meaning that we will not recommend adding something that is already there. The default value for the upper threshold is 0.5",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0.5"
+          },
+          {
+            "name": "remove_lower_threshold",
+            "in": "header",
+            "description": "The lower threshold is used to select centroids of sentences based on the similarity of the provided input and the centroid of existing clusters of sentences based on values.. The default value for the lower removal threshold is 0.3",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0.3"
+          },
+          {
+            "name": "remove_upper_threshold",
+            "in": "header",
+            "description": "An upper removal threshold limit is used to prevent false positives and remove a sentence in the prompt similar to one of our adversarial prompts. The default value for the upper removal threshold is 0.5",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0.5"
+          },
+          {
+            "name": "model_id",
+            "in": "header",
+            "description": "The local model id to be used. The default choice is: sentence-transformers/all-minilm-l6-v2",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "sentence-transformers/all-minilm-l6-v2"
+          },
+          {
+            "name": "model_path",
+            "in": "header",
+            "description": "The local model files path. The default choice is: ./models/all-MiniLM-L6-v2/",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "./models/all-MiniLM-L6-v2/"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful recommendation"
+          },
+          "404": {
+            "description": "invalid prompt"
+          }
+        }
+      }
     }
   }
-
 }
