@@ -48,12 +48,33 @@
             $( "#prompt" ).trigger( "keyup" ) ; // Looking for recommendations after accepting a recommendation
         }
 
+        // Preview for add recommendation
+        function preview_add_recommendation( p, flag ){
+            if( flag == "show" ){
+                $( "#prompt" ).val( $( "#prompt" ).val() + " " + p ) ;
+            }
+            else{
+                $( "#prompt" ).val( $( "#prompt" ).val().replace( " " + p, "" ) ) ;
+            }
+        }
+
         // Remove adversarial sentences from prompt
         function remove_recommendation( p ){
             $( "#prompt" ).val( $( "#prompt" ).val().replace( p, "" ) ) ;
             $( "#prompt" ).val( $( "#prompt" ).val().replace( "  ", " " ) ) ;
             $( "#recommendation" ).html( "" ) ;
             $( "#prompt" ).trigger( "keyup" ) ; // Looking for recommendations after accepting a recommendation
+        }
+
+        // Preview for add recommendation
+        function preview_remove_recommendation( p, flag ){
+            if( flag == "show" ){
+                $( "#prompt" ).data( "previous_prompt", $( "#prompt" ).val() ) ;
+                $( "#prompt" ).val( $( "#prompt" ).val().replace( p, "" ) ) ;
+            }
+            else{
+                $( "#prompt" ).val( $( "#prompt" ).data( "previous_prompt" ) ) ;
+            }
         }
 
         // Listening to changes performed on the prompt input field
@@ -92,7 +113,7 @@
                                 var sentence = data["remove"][i].sentence.replaceAll( "'", "\\'" ) ;
                                 var sentence_entity = data["remove"][i].sentence.replaceAll( "'", "&apos;" ) ;
                                 var sentence_value = data["remove"][i].value.replaceAll( "'", "\\'" ) ;
-                                $( "#recommendation" ).append( '<div class="bx--tag bx--tag--red bx--tag--deletable" style="cursor: pointer;" title="Remove sentence: ' + sentence_entity + '" onclick="remove_recommendation(\''+ sentence + '\')">x ' + sentence_value + '</div>' ) ;
+                                $( "#recommendation" ).append( '<div class="bx--tag bx--tag--red bx--tag--deletable" style="cursor: pointer;" title="Remove sentence: ' + sentence_entity + '" onmouseover="preview_remove_recommendation(\''+ sentence + '\', \'show\')" onmouseout="preview_remove_recommendation(\''+ sentence + '\', \'hide\')" onclick="remove_recommendation(\''+ sentence + '\')">x ' + sentence_value + '</div>' ) ;
                                 break ; // Showing only once removal recommendation at a time
                             }
                         }
@@ -105,7 +126,7 @@
                                     var sentence = data["add"][i].prompt.replaceAll( "'", "\\'" ) ;
                                     var sentence_entity = data["add"][i].prompt.replaceAll( "'", "&apos;" ) ;
                                     var sentence_value = data["add"][i].value.replaceAll( "'", "\\'" ) ;
-                                    $( "#recommendation" ).append( '<div class="bx--tag bx--tag--green" style="cursor: pointer;" title="Add sentence: ' + sentence_entity + '" onclick="add_recommendation(\''+ sentence + '\')">+ ' + sentence_value + '</div>' ) ;
+                                    $( "#recommendation" ).append( '<div class="bx--tag bx--tag--green" style="cursor: pointer;" title="Add sentence: ' + sentence_entity + '" onmouseover="preview_add_recommendation(\''+ sentence + '\', \'show\')" onmouseout="preview_add_recommendation(\''+ sentence + '\', \'hide\')" onclick="add_recommendation(\''+ sentence + '\')">+ ' + sentence_value + '</div>' ) ;
                                 }
                             }
                         }
@@ -133,24 +154,29 @@
             // TODO: Add loading after the request
             var temperature = 0.5 ;
             var max_new_tokens = 1000 ;
-            // go to https://huggingface.co/mistralai/Mistral-7B-v0.1 and ask access to mistral model
-            var model_id = "mistralai/Mistral-7B-v0.1";
-            const api_url = "https://api-inference.huggingface.co/models/"+model_id;
+            var model_id = "ibm/granite-13b-chat-v2" ; // TODO: change to HF llama "meta-llama/llama-2-70b-chat",
             $.ajax({
                 type: "POST",
-                headers: {"Authorization": "Bearer <include-token-here>", "Content-Type": "application/json"},
-                url: api_url,
+                url: "https://responsible-prompt-app.jo2bfsmp5jj.us-south.codeengine.appdomain.cloud/proxy",
                 data: JSON.stringify({
-                                "inputs": $("#prompt").val(),
-                                "parameters": {
-                                    "temperature": temperature,
-                                    "max_new_tokens": max_new_tokens}
+                                "json": {
+                                    "url":"https://bam-api.res.ibm.com/v2/text/generation?version=2024-01-10",
+                                    "json":{
+                                        "value": {
+                                            "model_id": model_id,
+                                            "input":  $( "#prompt" ).val(),
+                                            "parameters": {
+                                                "temperature": temperature,
+                                                "max_new_tokens": max_new_tokens
+                                            }
+                                        }
+                                    }
+                                }
                             }),
                 crossDomain: true,
-                success: function(data){
-                    //data = JSON.parse(data); 
-                    console.log(data);
-                    out = data[0].generated_text.split( "" ) ;
+                success: function( data ){
+                    data = JSON.parse( data ) ; ;
+                    out = data.results[0].generated_text.split( "" ) ;
                     // console.debug( out ) ;
                     // $( "#outcome" ).val( out ) ;
                     $( "#outcome" ).append( "\n\n+ ------------------------------------\n| Model: " + model_id + "\n| Temperature: " + temperature + "\n| Max new tokens: " + max_new_tokens + "\n+ ------------------------------------\n\n" ) ;

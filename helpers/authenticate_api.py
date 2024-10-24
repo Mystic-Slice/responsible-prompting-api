@@ -16,7 +16,7 @@
 # limitations under the License.
 
 """
-Python helper function to get HF credentials.
+Python helper function to authenticate in HF API.
 """
 
 __author__ = "Vagner Santana, Melina Alberio, Cassia Sanctos and Tiago Machado"
@@ -27,22 +27,23 @@ __version__ = "0.0.1"
 
 import os
 
-def get_credentials():
+def authenticate_api(hf_token, hf_url):
     """
-    Function that loads HF credentials from env file.
+    Function authenticate in HuggingFace API.
 
     Args:
-        None.
+        hf_token: HugginFace personal token.
+        hf_url: HuggingFace url to be accessed.
 
     Returns:
-        hf_token: personal HuggingFace token.
-        hf_url: HuggingFace url to be used.
+        An api url and headers.
 
     Raises:
         Nothing.
     """
-    # Loading hugging face token from env file
-    hf_token = os.environ.get('HF_TOKEN')
-    hf_url = os.environ.get('HF_URL')
+    # Sentence transformer model
+    model_id = "sentence-transformers/all-MiniLM-L6-v2"
 
-    return hf_token, hf_url
+    api_url = f"{hf_url}{model_id}"
+    headers = {"Authorization": f"Bearer {hf_token}"}
+    return api_url, headers

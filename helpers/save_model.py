@@ -16,7 +16,7 @@
 # limitations under the License.
 
 """
-Python helper function to get HF credentials.
+Python helper function to save HF model locally.
 """
 
 __author__ = "Vagner Santana, Melina Alberio, Cassia Sanctos and Tiago Machado"
@@ -26,23 +26,32 @@ __license__ = "Apache 2.0"
 __version__ = "0.0.1"
 
 import os
+from sentence_transformers import SentenceTransformer
 
-def get_credentials():
+def save_model():
     """
-    Function that loads HF credentials from env file.
+    Function that saves an HF model locally.
 
     Args:
         None.
 
     Returns:
-        hf_token: personal HuggingFace token.
-        hf_url: HuggingFace url to be used.
+        The model id and local path.
 
     Raises:
         Nothing.
     """
-    # Loading hugging face token from env file
-    hf_token = os.environ.get('HF_TOKEN')
-    hf_url = os.environ.get('HF_URL')
+    # sentence transformer model
+    model_id = "sentence-transformers/all-MiniLM-L6-v2"
+    
+    # download pretrained model
+    model = SentenceTransformer(model_id)
+    model_path = "./models/all-MiniLM-L6-v2/"
 
-    return hf_token, hf_url
+    # save to local directory
+    model.save(model_path)
+    saved_message = f"model {model_id} saved to {model_path}"
+    print(saved_message)
+
+    return model_id, model_path
+  
