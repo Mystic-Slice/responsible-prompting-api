@@ -4,6 +4,18 @@
 # Responsible prompting API
 Responsible Prompting is an LLM-agnostic tool that aims at dynamically supporting users in crafting prompts that reflect responsible intentions and help avoid undesired or negative outputs.
 
+
+1. [Usage of the API](#usage)
+2. [How to run the server in your machine](#instructions-on-how-to-run-the-server-locally)
+3. [Start the server: step by step](#steps-to-start-the-server)
+4. [Running the demo and accessing routes](#running-the-demo-and-accessing-server-routes)
+5. [Customize sentences](#customize-sentences)
+6. [Repo file structure](#file-structure)
+7. [Contribute](#how-to-contribute)
+8. [License](#license)
+9. [Authors](#authors)
+
+
 ## Usage
 This API is composed by a `Flask server` that hosts the `recommend`, `recommend_local`, `get_thresholds` routes, the `swagger` files and a responsible prompting `demo`.
 You can run the server locally to execute requests and obtain responsible prompting recommendations according to `swagger` description.
@@ -76,7 +88,6 @@ http://127.0.0.1:8080/recommend?prompt=Act as a data scientist with 8 years of e
 
 #### Example response
 The response should look like this:
-
 ```json
 {
   "add": [
@@ -111,8 +122,9 @@ The response should look like this:
 ```
 
 ## File structure
+<details>
+<summary>Expand to see the current structure of repository files</summary>
 
-This is the current structure of the repository files:
 ```
 .
 ├── CHANGELOG.md
@@ -124,32 +136,55 @@ This is the current structure of the repository files:
 ├── README.md
 ├── SECURITY.md
 ├── app.py
-├── config.py (swagger config file)
+├── config.py
 ├── control
-│   └── recommendation_handler.py
+│   └── recommendation_handler.py
 ├── helpers
-│   └── get_credentials.py
+│   ├── authenticate_api.py
+│   ├── get_credentials.py
+│   └── save_model.py
+├── models
+│   └── all-MiniLM-L6-v2
+│       ├── 1_Pooling
+│       │   └── config.json
+│       ├── 2_Normalize
+│       ├── README.md
+│       ├── config.json
+│       ├── config_sentence_transformers.json
+│       ├── model.safetensors
+│       ├── modules.json
+│       ├── sentence_bert_config.json
+│       ├── special_tokens_map.json
+│       ├── tokenizer.json
+│       ├── tokenizer_config.json
+│       └── vocab.txt
 ├── prompt-sentences-main
-│   ├── README.md
-│   ├── prompt_sentences-all-minilm-l6-v2.json
-│   ├── prompt_sentences-bge-large-en-v1.5.json
-│   ├── prompt_sentences-multilingual-e5-large.json
-│   ├── prompt_sentences-slate-125m-english-rtrvr.json
-│   ├── prompt_sentences-slate-30m-english-rtrvr.json
-│   ├── prompt_sentences.json
-│   ├── sentences_by_values-all-minilm-l6-v2.png
-│   ├── sentences_by_values-bge-large-en-v1.5.png
-│   ├── sentences_by_values-multilingual-e5-large.png
-│   ├── sentences_by_values-slate-125m-english-rtrvr.png
-│   └── sentences_by_values-slate-30m-english-rtrvr.png
+│   ├── README.md
+│   ├── prompt_sentences-all-minilm-l6-v2.json
+│   ├── prompt_sentences-bge-large-en-v1.5.json
+│   ├── prompt_sentences-multilingual-e5-large.json
+│   ├── prompt_sentences-slate-125m-english-rtrvr.json
+│   ├── prompt_sentences-slate-30m-english-rtrvr.json
+│   ├── prompt_sentences.json
+│   ├── sentences_by_values-all-minilm-l6-v2.png
+│   ├── sentences_by_values-bge-large-en-v1.5.png
+│   ├── sentences_by_values-multilingual-e5-large.png
+│   ├── sentences_by_values-slate-125m-english-rtrvr.png
+│   └── sentences_by_values-slate-30m-english-rtrvr.png
 ├── requirements.txt
-└── static
-    ├── demo
-    │   ├── index.html
-    │   └── js
-    │       └── jquery-3.7.1.min.js
-    └── swagger.json
+├── static
+│   ├── demo
+│   │   ├── index.html
+│   │   └── js
+│   │       └── jquery-3.7.1.min.js
+│   └── swagger.json
+└── tests
+    ├── test_api_url.py
+    ├── test_code_engine_url.py
+    └── test_hello_prompt.py
 ```
+</details>
+  
 <!-- This repository contains some example best practices for open source repositories:
 
 * [LICENSE](LICENSE)
