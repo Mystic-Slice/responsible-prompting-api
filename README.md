@@ -7,8 +7,8 @@ Responsible Prompting is an LLM-agnostic tool that aims at dynamically supportin
 1. [Usage of the API](#usage-of-the-api)
 2. [How to run the server in your machine](#how-to-run-the-server-in-your-machine)
 3. [Customize sentences](#customize-sentences)
-4. [Repo file structure](#file-structure)
-5. [Contribute](#how-to-contribute)
+4. [Repo file structure](#repo-file-structure)
+5. [Contribute](#contribute)
 6. [License](#license)
 7. [Authors](#authors)
 
