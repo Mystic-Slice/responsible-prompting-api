@@ -12,11 +12,11 @@ Responsible Prompting is an LLM-agnostic tool that aims at dynamically supportin
 6. [License](#license)
 7. [Authors](#authors)
 
-## 1. Usage of the API
+## Usage of the API
 This API is composed by a `Flask server` that hosts the `recommend`, `recommend_local`, `get_thresholds` routes, the `swagger` files and a responsible prompting `demo`.
 You can run the server locally to execute requests and obtain responsible prompting recommendations according to `swagger` description.
 
-## 2. How to run the server in your machine
+## How to run the server in your machine
 This assumes that you have:
 - A machine with python 3.9 installed
 - A Hugging Face access token: https://huggingface.co/docs/hub/en/security-tokens
@@ -114,7 +114,7 @@ The response should look like this:
   "remove": []
 }
 ```
-## 3. Customize sentences
+## Customize sentences
 
 There are two steps for customizing the recommendation sentences:
 1. Making changes to the input json file `prompt_sentences.json`
@@ -123,7 +123,7 @@ There are two steps for customizing the recommendation sentences:
  ### Making changes to the input json file `prompt_sentences.json`
  ### Obtaining the sentence embeddings
 
-## 4. Repo file structure
+## Repo file structure
 <details>
 <summary>Expand to see the current structure of repository files</summary>
 
@@ -209,7 +209,7 @@ These may be copied into a new or existing project to make it easier for develop
 
 <!-- A notes section is useful for anything that isn't covered in the Usage or Scope. Like what we have below. -->
 
-## 5. Contribute
+## Contribute
 <!-- **NOTE: While this boilerplate project uses the Apache 2.0 license, when
 establishing a new repo using this template, please use the
 license that was approved for your project.**
@@ -232,7 +232,7 @@ example:
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
-## 6. License
+## License
 <!-- All source files must include a Copyright and License header. The SPDX license header is 
 preferred because it can be easily scanned. -->
 
@@ -246,7 +246,7 @@ If you would like to see the detailed LICENSE click [here](LICENSE).
 #
 ``` -->
 
-## 7. Authors
+## Authors
 - Author: Vagner Santana vsantana@ibm.com
 - Author: Melina Alberio
 - Author: Cássia Sanctos csamp@ibm.com
