@@ -4,28 +4,24 @@
 # Responsible prompting API
 Responsible Prompting is an LLM-agnostic tool that aims at dynamically supporting users in crafting prompts that reflect responsible intentions and help avoid undesired or negative outputs.
 
+1. [Usage of the API](#usage-of-the-api)
+2. [How to run the server in your machine](#how-to-run-the-server-in-your-machine)
+3. [Customize sentences](#customize-sentences)
+4. [Repo file structure](#file-structure)
+5. [Contribute](#how-to-contribute)
+6. [License](#license)
+7. [Authors](#authors)
 
-1. [Usage of the API](#usage)
-2. [How to run the server in your machine](#instructions-on-how-to-run-the-server-locally)
-3. [Start the server: step by step](#steps-to-start-the-server)
-4. [Running the demo and accessing routes](#running-the-demo-and-accessing-server-routes)
-5. [Customize sentences](#customize-sentences)
-6. [Repo file structure](#file-structure)
-7. [Contribute](#how-to-contribute)
-8. [License](#license)
-9. [Authors](#authors)
-
-
-## Usage
+## 1. Usage of the API
 This API is composed by a `Flask server` that hosts the `recommend`, `recommend_local`, `get_thresholds` routes, the `swagger` files and a responsible prompting `demo`.
 You can run the server locally to execute requests and obtain responsible prompting recommendations according to `swagger` description.
 
-### Instructions on how to run the server locally
-This short tutorial assumes that you have:
+## 2. How to run the server in your machine
+This assumes that you have:
 - A machine with python 3.9 installed
 - A Hugging Face access token: https://huggingface.co/docs/hub/en/security-tokens
 
-### Steps to start the server
+### Start the server: step by step
 1. In your terminal, clone this repository and `cd` into `responsible-prompting-api` folder
 2. Create a virtual environment with `python -m venv <name-of-your-venv>` 
 3. Activate your virtual environment with `source <name-of-your-venv>/bin/activate`
@@ -65,7 +61,6 @@ In swagger, you can test the API and understand how to make requests.
 the prompt: `Act as a data scientist with 8 years of experience. Provide suggestions of what to do to make the data science project more inclusive.`
 
 #### Using curl
-
 Just copy and paste this in your terminal (make sure you have curl installed): 
 
 ```
@@ -80,7 +75,6 @@ curl -X 'GET' \
 ```
 
 #### Making a request directly in the browser
-
 Just copy and paste this in your browser:
 ```
 http://127.0.0.1:8080/recommend?prompt=Act as a data scientist with 8 years of experience. Provide suggestions of what to do to make the data science project more inclusive.
@@ -120,8 +114,16 @@ The response should look like this:
   "remove": []
 }
 ```
+## 3. Customize sentences
 
-## File structure
+There are two steps for customizing the recommendation sentences:
+1. Making changes to the input json file `prompt_sentences.json`
+2. Obtaining the sentence embeddings file with a local or remote model (we have a local `All-MiniLM-L6-v2` model ready for use)
+   
+ ### Making changes to the input json file `prompt_sentences.json`
+ ### Obtaining the sentence embeddings
+
+## 4. Repo file structure
 <details>
 <summary>Expand to see the current structure of repository files</summary>
 
@@ -139,6 +141,9 @@ The response should look like this:
 ├── config.py
 ├── control
 │   └── recommendation_handler.py
+├── customize
+│   └── customize_embeddings.py
+|   ├── customize_helper.py
 ├── helpers
 │   ├── authenticate_api.py
 │   ├── get_credentials.py
@@ -203,8 +208,8 @@ The following are OPTIONAL, but strongly suggested to have in your repository.
 These may be copied into a new or existing project to make it easier for developers not on a project team to collaborate.-->
 
 <!-- A notes section is useful for anything that isn't covered in the Usage or Scope. Like what we have below. -->
-## How to contribute
 
+## 5. Contribute
 <!-- **NOTE: While this boilerplate project uses the Apache 2.0 license, when
 establishing a new repo using this template, please use the
 license that was approved for your project.**
@@ -227,8 +232,7 @@ example:
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
-## License
-
+## 6. License
 <!-- All source files must include a Copyright and License header. The SPDX license header is 
 preferred because it can be easily scanned. -->
 
@@ -241,8 +245,8 @@ If you would like to see the detailed LICENSE click [here](LICENSE).
 # SPDX-License-Identifier: Apache-2.0
 #
 ``` -->
-## Authors
 
+## 7. Authors
 - Author: Vagner Santana vsantana@ibm.com
 - Author: Melina Alberio
 - Author: Cássia Sanctos csamp@ibm.com
