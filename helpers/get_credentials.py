@@ -29,24 +29,20 @@ import os
 
 def get_credentials():
     """
-    Function get HF credentials.
+    Function that loads HF credentials from env file.
 
     Args:
         None.
 
     Returns:
-        An api url and headers.
+        hf_token: personal HuggingFace token.
+        hf_url: HuggingFace url to be used.
 
     Raises:
         Nothing.
     """
-    # Sentence transformer model
-    model_id = "sentence-transformers/all-MiniLM-L6-v2"
-
     # Loading hugging face token from env file
     hf_token = os.environ.get('HF_TOKEN')
     hf_url = os.environ.get('HF_URL')
 
-    api_url = f"{hf_url}{model_id}"
-    headers = {"Authorization": f"Bearer {hf_token}"}
-    return api_url, headers
+    return hf_token, hf_url
