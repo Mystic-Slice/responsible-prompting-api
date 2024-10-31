@@ -155,7 +155,7 @@ You can also add a reference for the sentence in the `references` array and use 
 
  
   <details>
-  <summary>Expand to see an example of an input file structure</summary>
+  <summary>Expand to see an example of a populated input file structure</summary>
     
   ```json
   {
@@ -185,7 +185,101 @@ You can also add a reference for the sentence in the `references` array and use 
   ```
 
   </details>
- 
+
+ In the `prompt_sentences.json` input file, there are already 58 `positive_values` labels and 25 `negative_values` labels to which you can add more sentences to. 
+
+  <details>
+    <summary>Expand to see the positive values labels</summary>
+    
+    accountability
+    accuracy
+    advice
+    agreement
+    appropriate
+    awareness
+    collaboration
+    commitment
+    community
+    compliance
+    control
+    copyright, right of ownership
+    duty
+    education
+    effective
+    expertise
+    explainability
+    fairness
+    family
+    flexibility
+    forthright
+    honesty
+    impact
+    inclusion
+    indellible
+    innate
+    integrity
+    integrity, compliance, trust, ethics, and dedication
+    leadership
+    learning
+    measurability
+    money
+    monolithic
+    morality
+    openness
+    participation
+    personal
+    positivity
+    power
+    privacy
+    proactive
+    professional
+    progress
+    reputation
+    resolution
+    respect
+    responsibility
+    robustness
+    safety
+    scalability
+    security
+    success
+    transformation
+    transparency
+    trust
+    trust, compliance, and integrity
+    undebatable
+    universality
+  </details>
+
+  <details>
+    <summary>Expand to see the negative values labels</summary>
+    
+    abuse
+    arm trafficking
+    automation
+    bigamy
+    conflict and dissensus
+    criticality
+    deception
+    distrust
+    embezzlement
+    failure
+    falsification and misinformation
+    fraud
+    gambling
+    hacking
+    harassment
+    harmful
+    harmful bias
+    negativity
+    opaqueness
+    digital piracy
+    pickpocketing
+    prompt hacking
+    retaliation
+    unsafety
+    vulnerability
+  </details>
 
  ### Step 2: obtaining the sentence embeddings
  1. After editing `prompt_sentences.json` file, go into `customize/` folder, and run `customize_embeddings.py`
