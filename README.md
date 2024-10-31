@@ -115,13 +115,31 @@ The response should look like this:
 }
 ```
 ## Customize sentences
-
-There are two steps for customizing the recommendation sentences:
-1. Making changes to the input json file `prompt_sentences.json`
-2. Obtaining the sentence embeddings file with a local or remote model (we have a local `All-MiniLM-L6-v2` model ready for use)
+You can customize recommendation sentences by adding your own and generating embeddings. There are two steps for customizing the sentences.
+First, you will make changes to the input json file `prompt_sentences.json` and then, generate the sentence embeddings json file with a local or remote model. 
+If you cloned this repository, there is already a local `All-MiniLM-L6-v2` model ready for use inside the `models` folder.
    
- ### Making changes to the input json file `prompt_sentences.json`
- ### Obtaining the sentence embeddings
+ ### Step 1: making changes to the input json file `prompt_sentences.json`
+ 1. Go into `prompt-sentences-main/` folder
+ 2. Open `prompt_sentences.json` file and either change a sentence, include more sentences in the existing values, or add a new value with sentences
+ 
+ ### Step 2: obtaining the sentence embeddings
+ 1. After editing `prompt_sentences.json` file, go into `customize/` folder, and run `customize_embeddings.py`
+```
+cd customize/
+python customize_embeddings.py
+```
+ 2. Look into the `prompt-sentences-main` folder and you should have a new file called `prompt_sentences-all-MiniLM-L6-v2.json`
+
+> [!NOTE]  
+> In case you are using another local model, you can add the model to `models` folder and change the name of the model in the output file. To do this, make changes to `model_path` variable (line 35) of `customize_embeddings.py`
+>```
+>model_path = 'models/<name-of-your-model>'
+>```
+> Also, if you would like to use another sentences input file, or change the name of the input file, you can make changes to the `json_in_file variable` (line 40) of of `customize_embeddings.py`
+>```
+>json_in_file = 'prompt-sentences-main/<other-input-file-name>.json'
+>```
 
 ## Repo file structure
 <details>
