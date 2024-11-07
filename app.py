@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# Copyright 2021, IBM Corporation. 
+# Copyright 2021, IBM Corporation.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,8 +28,9 @@ __version__ = "0.0.1"
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 from flask_restful import Resource, Api, reqparse
-import control.recommendation_handler as recommendation_handler 
-import helpers.get_credentials as get_credentials
+import control.recommendation_handler as recommendation_handler
+from helpers import get_credentials, authenticate_api, save_model
+
 import config as cfg
 
 app = Flask(__name__)
@@ -44,25 +45,41 @@ def index():
 @app.route("/recommend", methods=['GET'])
 @cross_origin()
 def recommend():
-    api_url, headers = get_credentials.get_credentials()
+    hf_token, hf_url = get_credentials.get_credentials()
+    api_url, headers = authenticate_api.authenticate_api(hf_token, hf_url)
     prompt_json = recommendation_handler.populate_json()
     args = request.args
     print("args list = ", args)
     prompt = args.get("prompt")
-    recommendation_json = recommendation_handler.recommend_prompt(prompt, prompt_json, api_url, headers)
+    recommendation_json = recommendation_handler.recommend_prompt(prompt, prompt_json, 
+                                                                  api_url, headers)
     return recommendation_json
 
 @app.route("/get_thresholds", methods=['GET'])
 @cross_origin()
 def get_thresholds():
-    api_url, headers = get_credentials.get_credentials()
+    hf_token, hf_url = get_credentials.get_credentials()
+    api_url, headers = authenticate_api.authenticate_api(hf_token, hf_url)
+    prompt_json = recommendation_handler.populate_json()
+    model_id = 'sentence-transformers/all-minilm-l6-v2'
+    args = request.args
+    print("args list = ", args)
+    prompt = args.get("prompt")
+    thresholds_json = recommendation_handler.get_thresholds(prompt, prompt_json, api_url, 
+                                                            headers, model_id)
+    return thresholds_json
+
+@app.route("/recommend_local", methods=['GET'])
+@cross_origin()
+def recommend_local():
+    model_id, model_path = save_model.save_model()
     prompt_json = recommendation_handler.populate_json()
     args = request.args
     print("args list = ", args)
-    prompts = args.get("prompts")
-    thresholds_json = recommendation_handler.get_thresholds(prompts, prompt_json, api_url, 
-                                                            headers, model_id = 'sentence-transformers/all-minilm-l6-v2')
-    return thresholds_json
-        
+    prompt = args.get("prompt")
+    local_recommendation_json = recommendation_handler.recommend_local(prompt, prompt_json,
+                                                                       model_id, model_path)
+    return local_recommendation_json
+
 if __name__=='__main__':
 	app.run(host='0.0.0.0', port='8080', debug=True)
