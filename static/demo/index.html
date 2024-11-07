@@ -98,41 +98,41 @@
                 // Triggering the API request when ending of a sentence is found, e.g., .?!
                 if( last_char == "." || last_char == "?" || last_char == "!" ){
                     $( "#recommendation" ).html( 'Requesting recommendations: <div class="bx--tag bx--tag--gray bx--tag--deletable">...</div>' ) ;
-                    var api_url = "https://responsible-prompt-app.jo2bfsmp5jj.us-south.codeengine.appdomain.cloud/recommend?prompt="
+                    var api_url = "/recommend?prompt="
                     var p = $( "#prompt" ).val() ;
 
                     // API request
                     $.getJSON( api_url + encodeURI( p ), function( data ) {
+                        $( "#recommendation" ).html( "Recommendations: " ) ;
 
                         // Looking first for removal recommendations
                         // if( data["remove"].length > 0 && data["remove"][0].similarity > 0.5 ){
                         if( data["remove"].length > 0 ){
-                            $( "#recommendation" ).html( "Recommended values to remove: " ) ;
                             for( var i = 0; i < data["remove"].length ; i++ ){
                                 // $( "#prompt" ).html( $( "#prompt" ).html().replace( data["remove"][i].sentence, '<span style="text-decoration: underline red">' + data["remove"][i].sentence + '</span>' ) ) ;
                                 var sentence = data["remove"][i].sentence.replaceAll( "'", "\\'" ) ;
                                 var sentence_entity = data["remove"][i].sentence.replaceAll( "'", "&apos;" ) ;
                                 var sentence_value = data["remove"][i].value.replaceAll( "'", "\\'" ) ;
-                                $( "#recommendation" ).append( '<div class="bx--tag bx--tag--red bx--tag--deletable" style="cursor: pointer;" title="Remove sentence: ' + sentence_entity + '" onmouseover="preview_remove_recommendation(\''+ sentence + '\', \'show\')" onmouseout="preview_remove_recommendation(\''+ sentence + '\', \'hide\')" onclick="remove_recommendation(\''+ sentence + '\')">x ' + sentence_value + '</div>' ) ;
+                                $( "#recommendation" ).append( '<div class="bx--tag bx--tag--red bx--tag--deletable" style="cursor: pointer;" onmouseover="preview_remove_recommendation(\''+ sentence + '\', \'show\')" onmouseout="preview_remove_recommendation(\''+ sentence + '\', \'hide\')" onclick="remove_recommendation(\''+ sentence + '\')">x ' + sentence_value + '</div>' ) ;
                                 break ; // Showing only once removal recommendation at a time
                             }
                         }
-                        // After the removal recommendations are dealt with, then we show recommendations for inclusion
-                        else if( data["add"].length > 0 ){
-                            $( "#recommendation" ).html( "Recommended values to add: " ) ;
+
+                        // else if( data["add"].length > 0 ){ // After the removal recommendations are dealt with, then we show recommendations for inclusion
+                        if( data["add"].length > 0 ){ // Think Demo UX
                             for( var i = 0; i < data["add"].length; i++ ){
                                 if( $( "#prompt" ).val().indexOf( data["add"][i].prompt ) == -1 ){
                                     // Adding only recommendations that are not present in the prompt
                                     var sentence = data["add"][i].prompt.replaceAll( "'", "\\'" ) ;
                                     var sentence_entity = data["add"][i].prompt.replaceAll( "'", "&apos;" ) ;
                                     var sentence_value = data["add"][i].value.replaceAll( "'", "\\'" ) ;
-                                    $( "#recommendation" ).append( '<div class="bx--tag bx--tag--green" style="cursor: pointer;" title="Add sentence: ' + sentence_entity + '" onmouseover="preview_add_recommendation(\''+ sentence + '\', \'show\')" onmouseout="preview_add_recommendation(\''+ sentence + '\', \'hide\')" onclick="add_recommendation(\''+ sentence + '\')">+ ' + sentence_value + '</div>' ) ;
+                                    $( "#recommendation" ).append( '<div class="bx--tag bx--tag--green" style="cursor: pointer;" onmouseover="preview_add_recommendation(\''+ sentence + '\', \'show\')" onmouseout="preview_add_recommendation(\''+ sentence + '\', \'hide\')" onclick="add_recommendation(\''+ sentence + '\')">+ ' + sentence_value + '</div>' ) ;
                                 }
                             }
                         }
 
                         // User status message about recommendations found
-                        if( $( "#recommendation" ).html().indexOf( "Requesting recommendations" ) > -1 ){
+                        if( data["add"].length == 0 && data["remove"].length == 0 ){
                             $( "#recommendation" ).html( "No recommendations found." ) ;
                         }
                     });
