@@ -39,7 +39,7 @@ HF_TOKEN= <include-token-here>
 
 #### Steps to run the demo
 1. If not, generate a Hugging Face access token: https://huggingface.co/docs/hub/en/security-tokens
-2. In line 140 of [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html), replace `<include-token-here>` with your hugging face access token: 
+2. In file [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html), replace `<include-token-here>` with your hugging face access token: 
 ```
 headers: {"Authorization": "Bearer <include-token-here>"}
 ```
@@ -47,7 +47,7 @@ headers: {"Authorization": "Bearer <include-token-here>"}
 4. In your browser, access: http://127.0.0.1:8080/static/demo/index.html
 
 > [!NOTE]  
-> In case you wish to make requests to other APIs, you can change the `$ajax` call in line 138 of [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html). Remember to also make sure that the json data (in line 142) follows the specifications of the LLM being used.
+> In case you wish to make requests to other APIs, you can change the `$ajax` in [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html). Remember to also make sure that the json data follows the specifications of the LLM being used.
 
 ### Check the API swagger
 1. Run the server (if it is not already running)
