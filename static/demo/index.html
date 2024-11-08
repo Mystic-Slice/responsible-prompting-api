@@ -139,7 +139,56 @@
                 }
             }
         });
+        
+        // // Generation request
+        // $( "#demo" ).on( "submit", function(e){
+        //     var out = "" ;
+        //     $.ajaxSetup({
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'Accept': 'application/json',
+        //             'Access-Control-Allow-Headers': '*',
+        //             'Authorization' : 'Bearer <include-token-here>',
+        //         }
+        //     });
 
+        //     // TODO: Add loading after the request
+        //     var temperature = 0.5 ;
+        //     var max_new_tokens = 1000 ;
+        //     var model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+        //     $.ajax({
+        //         type: "POST",
+        //         url: "https://api-inference.huggingface.co/models/" + model_id,
+        //         data: JSON.stringify({
+        //                         "inputs":  $("#prompt").val(),
+        //                         "parameters": { 
+        //                             "temperature": temperature,
+        //                             "max_new_tokens": max_new_tokens
+        //                         }
+        //                     }),
+        //         crossDomain: true,
+        //         success: function(data){
+        //             out = data[0].generated_text.split("");
+        //             //console.log(out);
+        //             //out = data.results[0].generated_text.split( "" ) ;
+        //             //console.debug(out);
+        //             // $( "#outcome" ).val( out ) ;
+        //             $( "#outcome" ).append( "\n\n+ ------------------------------------\n| Model: " + model_id + "\n| Temperature: " + temperature + "\n| Max new tokens: " + max_new_tokens + "\n+ ------------------------------------\n\n" ) ;
+        //             // Animating the generated output
+        //             ( function typing_animation(){
+        //                 $( "#outcome" ).append( out.shift() ) ;
+        //                 $( "#outcome" ).scrollTop( $( "#outcome" )[0].scrollHeight ) ;
+        //                 if( out.length > 0 ) {
+        //                     setTimeout( typing_animation, 10 );
+        //                 }
+        //             } )()
+        //         }
+        //     });
+
+        //     // Returning false so the form keeps user in the same page
+        //     return false;
+        // });
+        
         // Generation request
         $( "#demo" ).on( "submit", function( e ){
             var out = "" ;
@@ -154,7 +203,7 @@
             // TODO: Add loading after the request
             var temperature = 0.5 ;
             var max_new_tokens = 1000 ;
-            var model_id = "ibm/granite-13b-chat-v2" ; // TODO: change to HF llama "meta-llama/llama-2-70b-chat",
+            var model_id = "ibm/granite-13b-chat-v2" ; 
             $.ajax({
                 type: "POST",
                 url: "https://responsible-prompt-app.jo2bfsmp5jj.us-south.codeengine.appdomain.cloud/proxy",
