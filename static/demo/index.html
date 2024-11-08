@@ -43,6 +43,7 @@
 
         // Add recommendations to the prompt
         function add_recommendation( p ){
+            preview_add_recommendation( p, "hide" )
             $( "#prompt" ).val( $( "#prompt" ).val() + " " + p ) ;
             $( "#recommendation" ).html( "" ) ;
             $( "#prompt" ).trigger( "keyup" ) ; // Looking for recommendations after accepting a recommendation
@@ -139,7 +140,7 @@
                 }
             }
         });
-        
+
         // // Generation request
         // $( "#demo" ).on( "submit", function(e){
         //     var out = "" ;
@@ -161,7 +162,7 @@
         //         url: "https://api-inference.huggingface.co/models/" + model_id,
         //         data: JSON.stringify({
         //                         "inputs":  $("#prompt").val(),
-        //                         "parameters": { 
+        //                         "parameters": {
         //                             "temperature": temperature,
         //                             "max_new_tokens": max_new_tokens
         //                         }
@@ -188,7 +189,7 @@
         //     // Returning false so the form keeps user in the same page
         //     return false;
         // });
-        
+
         // Generation request
         $( "#demo" ).on( "submit", function( e ){
             var out = "" ;
@@ -203,7 +204,7 @@
             // TODO: Add loading after the request
             var temperature = 0.5 ;
             var max_new_tokens = 1000 ;
-            var model_id = "ibm/granite-13b-chat-v2" ; 
+            var model_id = "ibm/granite-13b-chat-v2" ;
             $.ajax({
                 type: "POST",
                 url: "https://responsible-prompt-app.jo2bfsmp5jj.us-south.codeengine.appdomain.cloud/proxy",
