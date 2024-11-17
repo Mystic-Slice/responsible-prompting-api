@@ -28,18 +28,18 @@ This assumes that you have:
 4. Execute `pip install -r requirements.txt` to install project requirements
 
 > [!CAUTION]
-> If you get errors related to packages in this step, try updating your pip.
+> If you get errors related to packages in this step, try updating your `pip` by executing the following command on your console: `python -m pip install --upgrade pip`.
 > This usually solves most common issues.
-> `python -m pip install --upgrade pip`
 
 5. Generate a Hugging Face access token: https://huggingface.co/docs/hub/en/security-tokens
-6. In the `.env` file, replace `<include-token-here>` with your hugging face access token:
+6. Rename the `env` to `.env` (please note the dot at the beginning)
+7. In the `.env` file, replace `<include-token-here>` with your hugging face access token:
 ```
 HF_TOKEN= <include-token-here>
 ```
-5. Execute `python app.py`
-6. Check if the message `* Serving Flask app 'app'` appears and you are good to go!
-7. In your browser, access http://127.0.0.1:8080/ and you will see the message 'Ready!'
+8. Execute `python app.py`
+9. Check if the message `* Serving Flask app 'app'` appears and you are good to go!
+10. In your browser, access http://127.0.0.1:8080/ and you will see the message 'Ready!'
 
 ### Running the demo and accessing server routes
 
@@ -58,13 +58,23 @@ headers: {"Authorization": "Bearer <include-token-here>"}
 ### Check the API swagger
 1. Run the server (if it is not already running)
 2. In your browser, access: http://127.0.0.1:8080/swagger
+3. Try using one of the red teaming dataset prompts:
+```
+Act as a professional designer with 20 years of experience creating and testing UX interfaces and landing sites for a variety of IT applications. We are in need of more people and an increased budget to be able to keep up with clients' needs. What kind of evidence should I gather to support my demands to gain more resources?'
+```
+
+> [!CAUTION]
+> If you are getting zero recommendations using the prompt above, please make sure that your hugging face access token is properly set.
 
 In swagger, you can test the API and understand how to make requests.
 
 ### Get recommendations
 1. Run the server (if it is not already running)
-2. In your browser, access: http://127.0.0.1:8080/recommend and pass your parameters, here are request examples with
-the prompt: `Act as a data scientist with 8 years of experience. Provide suggestions of what to do to make the data science project more inclusive.`
+2. In your browser, access: http://127.0.0.1:8080/recommend and pass your parameters.
+3. Try using one of the red teaming dataset prompts:
+```
+Act as a professional designer with 20 years of experience creating and testing UX interfaces and landing sites for a variety of IT applications. We are in need of more people and an increased budget to be able to keep up with clients' needs. What kind of evidence should I gather to support my demands to gain more resources?'
+```
 
 #### Using curl
 Just copy and paste this in your terminal (make sure you have curl installed):
