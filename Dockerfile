@@ -9,6 +9,7 @@ COPY .env /opt/microservices/
 COPY app.py /opt/microservices/
 COPY config.py /opt/microservices/
 COPY helpers /opt/microservices/helpers
+COPY models /opt/microservices/models
 
 RUN pip install --upgrade pip \
 	&& pip install --upgrade pipenv\
@@ -16,7 +17,8 @@ RUN pip install --upgrade pip \
 	&& apt-get update \
 	&& apt install -y build-essential \
 	&& apt install -y libmariadb3 libmariadb-dev \
-	&& pip install --upgrade -r /opt/microservices/requirements.txt
+	&& pip install --no-cache-dir torch==2.0.0 --index-url https://download.pytorch.org/whl/cpu \
+	&& pip install --no-cache-dir --upgrade -r /opt/microservices/requirements.txt
 
 USER 1001
 EXPOSE 8080
