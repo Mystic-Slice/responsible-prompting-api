@@ -336,16 +336,20 @@ python customize/customize_embeddings.py
 
 ## Roadmap
 
-### Sentences and values
+### :brain: Sentences and values
 
 - Review/consolidate values used in the JSON sentences file.
 - Review/consolidate sentences that are too specific to be recommended to multiple prompts, e.g., citing percentage numbers or cases that could hardly be shared among multiple input prompts.
 
-### Adversarial prompts
+### :triangular_flag_on_post: Adversarial prompts
 
 - Include more recent adversarial sentences and prompt hacking techniques such as LLM-Flowbreaking to our JSON sentences file. An interesting starting point for selecting those may be https://safetyprompts.com/.
 
-### Recommendations
+### :bar_chart: Explainability
+
+- Visualization feature to show how recommendations connect with the input prompt in the embedding space.
+
+### :robot: Recommendations
 
 - Implement additional methods and techniques for recommending sentences beyond semantic similarity.
 - Implement different levels of recommendations (terms, words, tokens?).
@@ -353,11 +357,7 @@ python customize/customize_embeddings.py
 - Make recommendations less sensitive to typos.
 - Create a demo to showcase the recommendations in a chat-like user interface.
 
-### Explainability
-
-- Visualization feature to show how recommendations connect with the input prompt in the embedding space.
-
-### Automation
+### :robot: Automation
 
 - Automatic populate embeddings after the sentence file is changed.
 - Implement a feedback loop mechanism to log user choices after recommendations.
