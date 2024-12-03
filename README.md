@@ -336,13 +336,30 @@ python customize/customize_embeddings.py
 
 ## Roadmap
 
-✅ :white_check_mark: Endpoint for recommending thresholds.
-- Visualization feature to show how recommendations connect with the input prompt in the embedding space.
-- Recommendation of prompt templates for sentences before the user finishes a sentence, i.e., before typing period, question mark, or exclamation mark.
+### Sentences and values
+
+- Review/consolidate values used in the JSON sentences file.
+- Review/consolidate sentences that are too specific to be recommended to multiple prompts, e.g., citing percentage numbers or cases that could hardly be shared among multiple input prompts.
+
+### Negative values and adversarial prompts
+
+- Include more recent advesarial sentences and prompt hacking techniques such as LLM-Flowbraking.
+
+### Recommendations
+
+- Explore different methods for recommending sentences beyond semantic similarity.
 - Different levels of recommendations (sentences, terms, words, tokens?).
+- Recommendation of prompt templates for sentences before the user finishes a sentence, i.e., before typing period, question mark, or exclamation mark.
+- Make recommendations less sensitive to typos.
+
+### Explainability
+
+- Visualization feature to show how recommendations connect with the input prompt in the embedding space.
+
+### Automation
+
 - Automatic populate embeddings after the sentence file is changed.
 - Implement a feedback loop mechanism to log user choices after recommendations.
-- Make recommendations less sensitive to typos.
 
 ## Repo file structure
 <details>
@@ -457,7 +474,7 @@ example:
 <!-- All source files must include a Copyright and License header. The SPDX license header is
 preferred because it can be easily scanned. -->
 
-If you would like to see the detailed LICENSE click [here](LICENSE).
+This project is licensed under the [Apache License 2.0](LICENSE).
 
 <!--
 ```text
@@ -472,4 +489,4 @@ If you would like to see the detailed LICENSE click [here](LICENSE).
 [<img src="https://github.com/santanavagner.png" width="60px;"/>](https://github.com/santanavagner/)
 [<img src="https://github.com/melinaalberioguerra.png" width="60px;"/>](https://github.com/melinaalberioguerra/)
 [<img src="https://github.com/cassiasamp.png" width="60px;"/>](https://github.com/cassiasamp/)
-
+[<img src="https://github.com/tiago-git-area.png" width="60px;"/>](https://github.com/tiago-git-area/)
