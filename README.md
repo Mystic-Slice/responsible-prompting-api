@@ -8,7 +8,7 @@ This API is composed of a `Flask server` that hosts the `recommend`, `recommend_
 You can run the server locally to execute requests and obtain responsible prompting recommendations according to `swagger` description.
 
 1. [Getting started](#getting-started)
-2. [Customizing sentences](#customizing-sentences)
+2. [Customizing recommendations to your use case](#customizing-recommendations-to-your-use-case)
 3. [Roadmap](#roadmap)
 4. [Repo file structure](#repo-file-structure)
 5. [Contribute](#contribute)
@@ -39,7 +39,10 @@ HF_TOKEN=<include-token-here>
 8. In your browser, access http://127.0.0.1:8080/ and you will see the message 'Ready!'.
 9. In your browser, access http://127.0.0.1:8080/static/demo/index.html
 
-### Customizing the demo to use Hugging Face models
+### Connecting to LLMs hosted on Hugging Face
+
+The default demo version is sending the prompt to IBM granite. However, you send the resulting prompt to any LLM.
+Next we show how to send the resulting prompt to LLMs hosted on Hugging Face.
 
 1. Run the server (if it is not already running)
 2. Comment the current function attached to the `submit` event handler:
@@ -137,18 +140,44 @@ The response should look like this:
   "remove": []
 }
 ```
-## Customizing sentences
+## Customizing recommendations to your use case
 
-You can customize sentences and values recommended by adding your own and generating embeddings. There are two steps for customizing the sentences.
-First, you will make changes to the input json file `prompt_sentences.json` and then, generate the sentence embeddings json file with a local or remote model.
-If you cloned this repository, there is already a local `All-MiniLM-L6-v2` model ready for use inside the `models` folder.
+Responsible Prompting API was designed so it can be lightweight, LLM-agnostic, and easily customized to a plurality of use cases.
+The customization can be done in two ways: changing the model and/or changing the data sourced used for sentence recommendations. Here, we focus on editing the data source of the recommendations.
 
- ### Step 1: making changes to the input json file prompt_sentences.json
- 1. Go into `prompt-sentences-main/` folder
- 2. Open `prompt_sentences.json` file and either change a sentence, include more sentences in the existing values, or add a new value with sentences.
+The main data source used in the recommendations is the input json file `prompt_sentences.json`. This file contains the sentences to be recommended and also the adversarial sentences used to flag harmful sentences.
 
- Each sentence will be a value to a `text` key, inside a `prompts` array that has a `label` and its either in a `positive_values` or `negative_values` array.
-You can also add a reference for the sentence in the `references` array and use it inside the `ref` key. Note that both the `embedding` and `centroid` keys will be populated by a model after obtaining the embeddings at step 2.
+So, to customize the API to your use case, you have to:
+
+1. Update the **input** json file `prompt_sentences.json` according to your needs. For instance:
+    - Add values important to your organization,
+    - Add sentences meaningful for tasks your users are going to perform, or
+    - Add adversarial sentences you want people to be aware.
+2. Populate the **output** json file `prompt_sentences-all-minilm-l6-v2.json` using `All-MiniLM-L6-v2`, which is part of this repo and is ready for use inside the `models` folder.
+
+> [!NOTE]
+> You can use any model of your preference to populate the embeddings of **output** json files (named as `prompt_sentences-[model name].json`).
+> Here, we will describe the simplest step using a local model already part of this repo.
+
+> [!CAUTION]
+> Please note that using larger vectors will impact on response times. So, the challenge here is to find a balance between rich semantics provided by the embeddings and a compact representation of this embedding space to maintain the lightweight characteristic of the API.
+
+### Step 1: Updating the input json file prompt_sentences.json
+1. Go into `prompt-sentences-main/` folder
+2. Edit the **input** json file `prompt_sentences.json` as needed.
+
+The `prompt_sentences.json` has the following structure:
+- Two blocks of social values: `positive_values` and `negative_values`.
+- Inside each block, you have multiple social values, where each one is represented by:
+    - A `label`,
+    - An array `prompts`, and
+    - A `centroid`[^1].
+- Then, each prompt has:
+    - A sentence placed under the `text` key,
+    - A reference id (`ref`) for the source of that sentence,
+    - And the `embedding`[^1] to be populated in the next step.
+
+[^1]: Both the `embedding` and `centroid` keys will be populated in the **output** json `prompt_sentences-[model name].json` file by a model after obtaining the embeddings at step 2.
 
  ```json
   {
@@ -210,121 +239,26 @@ You can also add a reference for the sentence in the `references` array and use 
 
   </details>
 
- In the `prompt_sentences.json` input file, there are already 58 `positive_values` labels and 25 `negative_values` labels to which you can add more sentences to.
+### Step 2: Populate the output json file prompt_sentences-[model name].json
 
-  <details>
-    <summary>Expand to see the positive values labels</summary>
+Once the input file has been edited, the embeddings need to be populated by the model and the centroids need to be updated.
 
-    accountability
-    accuracy
-    advice
-    agreement
-    appropriate
-    awareness
-    collaboration
-    commitment
-    community
-    compliance
-    control
-    copyright, right of ownership
-    duty
-    education
-    effective
-    expertise
-    explainability
-    fairness
-    family
-    flexibility
-    forthright
-    honesty
-    impact
-    inclusion
-    indellible
-    innate
-    integrity
-    integrity, compliance, trust, ethics, and dedication
-    leadership
-    learning
-    measurability
-    money
-    monolithic
-    morality
-    openness
-    participation
-    personal
-    positivity
-    power
-    privacy
-    proactive
-    professional
-    progress
-    reputation
-    resolution
-    respect
-    responsibility
-    robustness
-    safety
-    scalability
-    security
-    success
-    transformation
-    transparency
-    trust
-    trust, compliance, and integrity
-    undebatable
-    universality
-  </details>
-
-  <details>
-    <summary>Expand to see the negative values labels</summary>
-
-    abuse
-    arm trafficking
-    automation
-    bigamy
-    conflict and dissensus
-    criticality
-    deception
-    distrust
-    embezzlement
-    failure
-    falsification and misinformation
-    fraud
-    gambling
-    hacking
-    harassment
-    harmful
-    harmful bias
-    negativity
-    opaqueness
-    digital piracy
-    pickpocketing
-    prompt hacking
-    retaliation
-    unsafety
-    vulnerability
-  </details>
-
- ### Step 2: obtaining the sentence embeddings
- Once the input file has been edited, the embeddings need to be generated by the model and the centroids need to be computed.
-
- 1. After editing `prompt_sentences.json` file, go back into our root `responsible-prompting-api/` folder and run `customize/customize_embeddings.py`
+1. Go back to the root folder (`responsible-prompting-api/`) and run `customize/customize_embeddings.py`
 ```
 python customize/customize_embeddings.py
 ```
+
+2. Look into the `prompt-sentences-main` folder and you should have an updated **output** json file called `prompt_sentences-all-minilm-l6-v2.json`
+
+3. Finally, in your browser, access the demo http://127.0.0.1:8080/static/demo/index.html and test the API by writing a prompt sentence with terms/semantics similar to the ones you added and, voilà, you should be able to see the changes you've made and see new values/sentences specific to your use case.
+
 > [!NOTE]
 > Please note that populating the output json sentences file may take several minutes. For instance, populating the sentences file using `all-minilm-l6-v2` on a MacBookPro takes about 5min.
 
 > [!CAUTION]
-> If you get a `FileNotFoundError`, for instance
-> `FileNotFoundError: [Errno 2] No such file or directory: 'prompt-sentences-main/prompt_sentences.json'`
->
-> It means you aren't running the script from the main `responsible-prompting-api/` folder. You need to go back into that directory and run ```python customize/customize_embeddings.py```
+> If you get a `FileNotFoundError`, it means you aren't running the script from the main `responsible-prompting-api/` folder. You need to go back into that directory and run ```python customize/customize_embeddings.py```
 
-
- 2. Look into the `prompt-sentences-main` folder and you should have a new file called `prompt_sentences-all-MiniLM-L6-v2.json`
-
-> [!NOTE]
+> [!TIP]
 > In case you are using another local model, you can add the model to `models` folder and change the name of the model in the output file. To do this, make changes to `model_path` variable of `customize_embeddings.py`
 >```
 >model_path = 'models/<name-of-your-model>'
@@ -333,6 +267,9 @@ python customize/customize_embeddings.py
 >```
 >json_in_file = 'prompt-sentences-main/<other-input-file-name>.json'
 >```
+
+> [!CAUTION]
+> If you're using a model different from `all-minilm-l6-v2`, you need to update the API `$ajax` request informing the model you are using.
 
 ## Roadmap
 
