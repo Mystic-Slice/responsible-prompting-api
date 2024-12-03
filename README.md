@@ -341,16 +341,17 @@ python customize/customize_embeddings.py
 - Review/consolidate values used in the JSON sentences file.
 - Review/consolidate sentences that are too specific to be recommended to multiple prompts, e.g., citing percentage numbers or cases that could hardly be shared among multiple input prompts.
 
-### Negative values and adversarial prompts
+### Adversarial prompts
 
-- Include more recent adversarial sentences and prompt hacking techniques such as LLM-Flowbraking.
+- Include more recent adversarial sentences and prompt hacking techniques such as LLM-Flowbreaking to our JSON sentences file. An interesting starting point for selecting those may be https://safetyprompts.com/.
 
 ### Recommendations
 
-- Explore different methods for recommending sentences beyond semantic similarity.
-- Different levels of recommendations (sentences, terms, words, tokens?).
-- Recommendation of prompt templates for sentences before the user finishes a sentence, i.e., before typing period, question mark, or exclamation mark.
+- Implement additional methods and techniques for recommending sentences beyond semantic similarity.
+- Implement different levels of recommendations (terms, words, tokens?).
+- Add feature to recommend prompt templates for sentences before the user finishes a sentence, i.e., before typing period, question mark, or exclamation mark.
 - Make recommendations less sensitive to typos.
+- Create a demo to showcase the recommendations in a chat-like user interface.
 
 ### Explainability
 
