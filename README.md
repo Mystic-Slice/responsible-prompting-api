@@ -36,8 +36,8 @@ First, make sure you have:
 HF_TOKEN=<include-token-here>
 ```
 7. Execute `python app.py`
-8. In your browser, access http://127.0.0.1:8080/ and you will see the message 'Ready!'.
-9. In your browser, access http://127.0.0.1:8080/static/demo/index.html
+8. Test that the server is running by accessing http://127.0.0.1:8080/ in your browser. You should see the message 'Ready!'.
+9. Play with our demo by accessing http://127.0.0.1:8080/static/demo/index.html in your browser.
 
 ### Connecting to LLMs hosted on Hugging Face
 
@@ -45,17 +45,17 @@ The default demo version is sending the prompt to IBM granite. However, you send
 Next we show how to send the resulting prompt to LLMs hosted on Hugging Face.
 
 1. Run the server (if it is not already running)
-2. Comment the current function attached to the `submit` event handler:
+2. Comment the current function attached to the `submit` event handler in the [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html) file:
 ```
 $( "#demo" ).on( "submit", function( e ){ // Granite
 ...
 ```
-3. Uncomment the Hugging Face template function for the `submit` event handler:
+3. Still in the [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html) file, uncomment the Hugging Face template function for the `submit` event handler in the:
 ```
 $( "#demo" ).on( "submit", function( e ){ // Hugging Face
 ...
 ```
-4. Replace `<include-token-here>` with your hugging face access token in the [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html) file:
+4. Inside the template function you've just uncommented, replace `<include-token-here>` with your hugging face access token:
 ```
 headers: {"Authorization": "Bearer <include-token-here>"}
 ```
@@ -76,7 +76,8 @@ Act as a professional designer with 20 years of experience creating and testing 
 > [!CAUTION]
 > If you are getting zero recommendations using the prompt above, please make sure that your hugging face access token is properly set.
 
-In swagger, you can test the API and understand how to make requests.
+> [!TIP]
+> In swagger, you can test the API and understand how to make requests. Moreover, play with different sentence transformers to see how they differ in terms of recommendations.
 
 ### Get recommendations
 1. Run the server (if it is not already running)
@@ -142,10 +143,10 @@ The response should look like this:
 ```
 ## Customizing recommendations to your use case
 
-Responsible Prompting API was designed so it can be lightweight, LLM-agnostic, and easily customized to a plurality of use cases.
+Responsible Prompting API was designed to be lightweight, LLM-agnostic, and easily customized to a plurality of use cases.
 The customization can be done in two ways: changing the model and/or changing the data sourced used for sentence recommendations. Here, we focus on editing the data source of the recommendations.
 
-The main data source used in the recommendations is the input json file `prompt_sentences.json`. This file contains the sentences to be recommended and also the adversarial sentences used to flag harmful sentences.
+The main data source used in the recommendations is the input json file `prompt_sentences.json`. This file contains the sentences to be recommended and also the adversarial sentences used to flag sentences as harmful.
 
 So, to customize the API to your use case, you have to:
 
@@ -162,7 +163,7 @@ So, to customize the API to your use case, you have to:
 > [!CAUTION]
 > Please note that using larger vectors will impact on response times. So, the challenge here is to find a balance between rich semantics provided by the embeddings and a compact representation of this embedding space to maintain the lightweight characteristic of the API.
 
-### Step 1: Updating the input json file prompt_sentences.json
+### Step 1: Updating the input json file (prompt_sentences.json)
 1. Go into `prompt-sentences-main/` folder
 2. Edit the **input** json file `prompt_sentences.json` as needed.
 
@@ -171,13 +172,14 @@ The `prompt_sentences.json` has the following structure:
 - Inside each block, you have multiple social values, where each one is represented by:
     - A `label`,
     - An array `prompts`, and
-    - A `centroid`[^1].
+    - A `centroid`.
 - Then, each prompt has:
     - A sentence placed under the `text` key,
     - A reference id (`ref`) for the source of that sentence,
-    - And the `embedding`[^1] to be populated in the next step.
+    - And the `embedding` to be populated in the next step.
 
-[^1]: Both the `embedding` and `centroid` keys will be populated in the **output** json `prompt_sentences-[model name].json` file by a model after obtaining the embeddings at step 2.
+> [!NOTE]
+> Both the `embedding` and `centroid` keys will be populated in the **output** json `prompt_sentences-[model name].json` file by a model after obtaining the embeddings at step 2.
 
  ```json
   {
@@ -239,7 +241,7 @@ The `prompt_sentences.json` has the following structure:
 
   </details>
 
-### Step 2: Populate the output json file prompt_sentences-[model name].json
+### Step 2: Populate the output json file (prompt_sentences-[model name].json)
 
 Once the input file has been edited, the embeddings need to be populated by the model and the centroids need to be updated.
 
@@ -247,16 +249,18 @@ Once the input file has been edited, the embeddings need to be populated by the 
 ```
 python customize/customize_embeddings.py
 ```
+> [!CAUTION]
+> If you get a `FileNotFoundError`, it means you aren't running the script from the main `responsible-prompting-api/` folder. You need to go back into that directory and run ```python customize/customize_embeddings.py```
+
+> [!NOTE]
+> Populating the output json sentences file may take several minutes. For instance, populating the sentences file locally using `all-minilm-l6-v2` on a MacBookPro takes about 5min.
 
 2. Look into the `prompt-sentences-main` folder and you should have an updated **output** json file called `prompt_sentences-all-minilm-l6-v2.json`
 
 3. Finally, in your browser, access the demo http://127.0.0.1:8080/static/demo/index.html and test the API by writing a prompt sentence with terms/semantics similar to the ones you added and, voilà, you should be able to see the changes you've made and see new values/sentences specific to your use case.
 
-> [!NOTE]
-> Please note that populating the output json sentences file may take several minutes. For instance, populating the sentences file using `all-minilm-l6-v2` on a MacBookPro takes about 5min.
-
 > [!CAUTION]
-> If you get a `FileNotFoundError`, it means you aren't running the script from the main `responsible-prompting-api/` folder. You need to go back into that directory and run ```python customize/customize_embeddings.py```
+> If you're using a model different from `all-minilm-l6-v2`, you need to update the API `$ajax` request informing the model you are using.
 
 > [!TIP]
 > In case you are using another local model, you can add the model to `models` folder and change the name of the model in the output file. To do this, make changes to `model_path` variable of `customize_embeddings.py`
@@ -268,19 +272,16 @@ python customize/customize_embeddings.py
 >json_in_file = 'prompt-sentences-main/<other-input-file-name>.json'
 >```
 
-> [!CAUTION]
-> If you're using a model different from `all-minilm-l6-v2`, you need to update the API `$ajax` request informing the model you are using.
-
 ## Roadmap
 
-### :brain: Sentences and values
+### :brain: Sentences and social values
 
-- Review/consolidate values used in the JSON sentences file.
-- Review/consolidate sentences that are too specific to be recommended to multiple prompts, e.g., citing percentage numbers or cases that could hardly be shared among multiple input prompts.
+- Review/consolidate social values used in the input JSON sentences file.
+- Review/consolidate sentences that are too specific to be recommended to multiple prompts, e.g., citing percentage numbers or cases that would hardly be shared among multiple input prompts.
 
 ### :triangular_flag_on_post: Adversarial prompts
 
-- Include more recent adversarial sentences and prompt hacking techniques such as LLM-Flowbreaking to our JSON sentences file. An interesting starting point for selecting those may be https://safetyprompts.com/.
+- Include more recent adversarial sentences and prompt hacking techniques such as LLM-Flowbreaking to our input JSON sentences file. An interesting starting point for selecting those may be https://safetyprompts.com/.
 
 ### :bar_chart: Explainability
 
@@ -396,11 +397,11 @@ use the DCO to manage contributions. The DCO bot will help enforce that.
 Please contact one of the IBM GH Org stewards.** -->
 
 <!-- Questions can be useful but optional, this gives you a place to say, "This is how to contact this project maintainers or create PRs -->
-If you have any questions or issues you can create a new [issue here][issues].
+If you have any questions or issues, please [create a new issue](issues).
 
 Pull requests are very welcome! Make sure your patches are well tested.
-Ideally create a topic branch for every separate change you make. For
-example:
+Ideally create a topic branch for every separate change you make.
+For example:
 
 1. Fork the repo
 2. Create your feature branch (`git checkout -b my-new-feature`)
