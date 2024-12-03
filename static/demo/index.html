@@ -16,7 +16,7 @@
                 <form class="bx--form" id="demo">
                     <div class="bx--form-item">
                         <label for="prompt" class="bx--label">Prompt</label>
-                        <textarea id="prompt" name="prompt" class="bx--text-area" rows="4" placeholder="Enter your prompt"></textarea>
+                        <textarea id="prompt" name="prompt" class="bx--text-area" rows="4" placeholder="Enter your prompt">Act as a professional designer with 20 years of experience creating and testing UX interfaces and landing sites for a variety of IT applications. We are in need of more people and an increased budget to be able to keep up with clients' needs. What kind of evidence should I gather to support my demands to gain more resources?</textarea>
                         <div id="recommendation" style="height: 3em;" class="bx--form__helper-text"></div>
                     </div>
 
@@ -142,7 +142,7 @@
         });
 
         // // Generation request
-        // $( "#demo" ).on( "submit", function(e){
+        // $( "#demo" ).on( "submit", function(e){ // Hugging Face
         //     var out = "" ;
         //     $.ajaxSetup({
         //         headers: {
@@ -191,7 +191,7 @@
         // });
 
         // Generation request
-        $( "#demo" ).on( "submit", function( e ){
+        $( "#demo" ).on( "submit", function( e ){ // Granite
             var out = "" ;
             $.ajaxSetup({
                 headers: {

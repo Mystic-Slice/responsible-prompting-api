@@ -2,26 +2,25 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Responsible prompting API
-Responsible Prompting is an LLM-agnostic prompt recommender system that aims at dynamically supporting users in crafting prompts that embed social values and avoid harmful prompts.
+Responsible Prompting is an LLM-agnostic lightweight prompt recommender system that aims at dynamically supporting users in crafting prompts that embed social values and avoid harmful prompts.
 
-1. [Usage of the API](#usage-of-the-api)
-2. [How to run the server in your machine](#how-to-run-the-server-in-your-machine)
-3. [Customize sentences](#customize-sentences)
-4. [Repo file structure](#repo-file-structure)
-5. [Contribute](#contribute)
-6. [License](#license)
-7. [Authors](#authors)
-
-## Usage of the API
 This API is composed of a `Flask server` that hosts the `recommend`, `recommend_local`, `get_thresholds` routes, the `swagger` files and a responsible prompting `demo`.
 You can run the server locally to execute requests and obtain responsible prompting recommendations according to `swagger` description.
 
-## How to run the server in your machine
-This assumes that you have:
+1. [Getting started](#getting-started)
+2. [Customizing sentences](#customizing-sentences)
+3. [Roadmap](#roadmap)
+4. [Repo file structure](#repo-file-structure)
+5. [Contribute](#contribute)
+6. [License](#license)
+7. [Contributors](#contributors)
+
+## Getting started
+First, make sure you have:
 - A machine with python 3.9 installed
 - A Hugging Face access token: https://huggingface.co/docs/hub/en/security-tokens
 
-### Start the server: step by step
+### Start the server:
 1. In your terminal, clone this repository and `cd` into `responsible-prompting-api` folder
 2. Create a virtual environment with `python -m venv <name-of-your-venv>`
 3. Activate your virtual environment with `source <name-of-your-venv>/bin/activate`
@@ -31,31 +30,39 @@ This assumes that you have:
 > If you get errors related to packages in this step, try updating your `pip` by executing the following command on your console: `python -m pip install --upgrade pip`.
 > This usually solves most common issues.
 
-5. Generate a Hugging Face access token: https://huggingface.co/docs/hub/en/security-tokens
-6. Rename the `env` to `.env` (please note the dot at the beginning)
-7. In the `.env` file, replace `<include-token-here>` with your hugging face access token:
+5. Rename the `env` to `.env` (please note the dot at the beginning)
+6. In the `.env` file, replace `<include-token-here>` with your Hugging Face access token:
 ```
-HF_TOKEN= <include-token-here>
+HF_TOKEN=<include-token-here>
 ```
-8. Execute `python app.py`
-9. Check if the message `* Serving Flask app 'app'` appears and you are good to go!
-10. In your browser, access http://127.0.0.1:8080/ and you will see the message 'Ready!'
+7. Execute `python app.py`
+8. In your browser, access http://127.0.0.1:8080/ and you will see the message 'Ready!'.
+9. In your browser, access http://127.0.0.1:8080/static/demo/index.html
 
-### Running the demo and accessing server routes
+### Customizing the demo to use Hugging Face models
 
-#### Steps to run the demo
-1. Generate a Hugging Face access token: https://huggingface.co/docs/hub/en/security-tokens
-2. In file [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html), replace `<include-token-here>` with your hugging face access token:
+1. Run the server (if it is not already running)
+2. Comment the current function attached to the `submit` event handler:
+```
+$( "#demo" ).on( "submit", function( e ){ // Granite
+...
+```
+3. Uncomment the Hugging Face template function for the `submit` event handler:
+```
+$( "#demo" ).on( "submit", function( e ){ // Hugging Face
+...
+```
+4. Replace `<include-token-here>` with your hugging face access token in the [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html) file:
 ```
 headers: {"Authorization": "Bearer <include-token-here>"}
 ```
-3. Run the server (if it is not already running)
-4. In your browser, access: http://127.0.0.1:8080/static/demo/index.html
 
-> [!NOTE]
-> In case you wish to make requests to other APIs, you can change the `$ajax` in [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html). Remember to also make sure that the json data follows the specifications of the LLM being used.
+> [!CAUTION]
+> When customizing the `$ajax` call, please make sure that the json data follows the specifications of the LLM being used.
 
-### Check the API swagger
+5. In your browser, access http://127.0.0.1:8080/static/demo/index.html
+
+### Check out the API swagger
 1. Run the server (if it is not already running)
 2. In your browser, access: http://127.0.0.1:8080/swagger
 3. Try using one of the red teaming dataset prompts:
@@ -73,7 +80,7 @@ In swagger, you can test the API and understand how to make requests.
 2. In your browser, access: http://127.0.0.1:8080/recommend and pass your parameters.
 3. Try using one of the red teaming dataset prompts:
 ```
-Act as a professional designer with 20 years of experience creating and testing UX interfaces and landing sites for a variety of IT applications. We are in need of more people and an increased budget to be able to keep up with clients' needs. What kind of evidence should I gather to support my demands to gain more resources?'
+Act as a professional designer with 20 years of experience creating and testing UX interfaces and landing sites for a variety of IT applications. We are in need of more people and an increased budget to be able to keep up with clients' needs. What kind of evidence should I gather to support my demands to gain more resources?
 ```
 
 #### Using curl
@@ -130,7 +137,8 @@ The response should look like this:
   "remove": []
 }
 ```
-## Customize sentences
+## Customizing sentences
+
 You can customize sentences and values recommended by adding your own and generating embeddings. There are two steps for customizing the sentences.
 First, you will make changes to the input json file `prompt_sentences.json` and then, generate the sentence embeddings json file with a local or remote model.
 If you cloned this repository, there is already a local `All-MiniLM-L6-v2` model ready for use inside the `models` folder.
@@ -326,6 +334,16 @@ python customize/customize_embeddings.py
 >json_in_file = 'prompt-sentences-main/<other-input-file-name>.json'
 >```
 
+## Roadmap
+
+✅ :white_check_mark: Endpoint for recommending thresholds.
+- Visualization feature to show how recommendations connect with the input prompt in the embedding space.
+- Recommendation of prompt templates for sentences before the user finishes a sentence, i.e., before typing period, question mark, or exclamation mark.
+- Different levels of recommendations (sentences, terms, words, tokens?).
+- Automatic populate embeddings after the sentence file is changed.
+- Implement a feedback loop mechanism to log user choices after recommendations.
+- Make recommendations less sensitive to typos.
+
 ## Repo file structure
 <details>
 <summary>Expand to see the current structure of repository files</summary>
@@ -449,10 +467,9 @@ If you would like to see the detailed LICENSE click [here](LICENSE).
 #
 ``` -->
 
-## Authors
-- Author: Vagner Santana vsantana@ibm.com
-- Author: Melina Alberio
-- Author: Cássia Sanctos csamp@ibm.com
-- Author: Tiago Machado Tiago.Machado@ibm.com
+## Contributors
 
-[issues]: https://github.com/IBM/repo-template/issues/new
+[<img src="https://github.com/santanavagner.png" width="60px;"/>](https://github.com/santanavagner/)
+[<img src="https://github.com/melinaalberioguerra.png" width="60px;"/>](https://github.com/melinaalberioguerra/)
+[<img src="https://github.com/cassiasamp.png" width="60px;"/>](https://github.com/cassiasamp/)
+
