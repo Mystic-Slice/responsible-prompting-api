@@ -343,7 +343,7 @@ python customize/customize_embeddings.py
 
 ### Negative values and adversarial prompts
 
-- Include more recent advesarial sentences and prompt hacking techniques such as LLM-Flowbraking.
+- Include more recent adversarial sentences and prompt hacking techniques such as LLM-Flowbraking.
 
 ### Recommendations
 
