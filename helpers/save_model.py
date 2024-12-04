@@ -49,9 +49,12 @@ def save_model():
     model_path = "./models/all-MiniLM-L6-v2/"
 
     # save to local directory
-    model.save(model_path)
-    saved_message = f"model {model_id} saved to {model_path}"
-    print(saved_message)
+    try:
+        model.save(model_path)
+        saved_message = f"model {model_id} saved to {model_path}"
+        print(saved_message)
+    except:
+        ('There was an error when saving the model')
 
     return model_id, model_path
   
