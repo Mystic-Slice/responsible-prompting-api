@@ -294,6 +294,7 @@ python customize/customize_embeddings.py
 - Add feature to recommend prompt templates for sentences before the user finishes a sentence, i.e., before typing period, question mark, or exclamation mark.
 - Make recommendations less sensitive to typos.
 - Create a demo to showcase the recommendations in a chat-like user interface.
+- Improve the recommendation of sentences (recommend endpoint) in a way that recommended sentences are similar to the input prompt, but diverse among them. This is a result from a user study run in 2024 in which participants mentioned that the sentences recommended to add to the prompt were somewhat redundant/too similar. Hence, we need to maximize similarity with input while minimizing similarity among recommended sentences to prevent this redundancy.
 
 ### :robot: Automation
 
@@ -425,7 +426,7 @@ This project is licensed under the [Apache License 2.0](LICENSE).
 
 ## Contributors
 
-[<img src="https://github.com/santanavagner.png" width="60px;"/>](https://github.com/santanavagner/)
-[<img src="https://github.com/melinaalberioguerra.png" width="60px;"/>](https://github.com/melinaalberioguerra/)
-[<img src="https://github.com/cassiasamp.png" width="60px;"/>](https://github.com/cassiasamp/)
-[<img src="https://github.com/tiago-git-area.png" width="60px;"/>](https://github.com/tiago-git-area/)
+[<img src="https://github.com/santanavagner.png" width="60px;" class="avatar circle"/>](https://github.com/santanavagner/)
+[<img src="https://github.com/melinaalberioguerra.png" width="60px;" class="avatar circle"/>](https://github.com/melinaalberioguerra/)
+[<img src="https://github.com/cassiasamp.png" width="60px;" class="avatar circle"/>](https://github.com/cassiasamp/)
+[<img src="https://github.com/tiago-git-area.png" width="60px;" class="avatar circle"/>](https://github.com/tiago-git-area/)
