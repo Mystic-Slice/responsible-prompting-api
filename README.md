@@ -295,6 +295,7 @@ python customize/customize_embeddings.py
 - Make recommendations less sensitive to typos.
 - Create a demo to showcase the recommendations in a chat-like user interface.
 - Improve the recommendation of sentences (recommend endpoint) in a way that recommended sentences are similar to the input prompt, but diverse among them. This is a result from a user study run in 2024 in which participants mentioned that the sentences recommended to add to the prompt were somewhat redundant/too similar. Hence, we need to maximize similarity with input while minimizing similarity among recommended sentences to prevent this redundancy.
+- Keep a history of recommendations at the client-side (demo) so users can still visualize/use previous recommendations.
 
 ### :robot: Automation
 
