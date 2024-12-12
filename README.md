@@ -432,3 +432,4 @@ This project is licensed under the [Apache License 2.0](LICENSE).
 [<img src="https://github.com/cassiasamp.png" width="60px;"/>](https://github.com/cassiasamp/)
 [<img src="https://github.com/tiago-git-area.png" width="60px;"/>](https://github.com/tiago-git-area/)
 [<img src="https://github.com/Heloisa-Candello.png" width="60px;"/>](https://github.com/Heloisa-Candello/)
+[<img src="https://github.com/seb-brAInethics.png" width="60px;"/>](https://github.com/seb-brAInethics/)
