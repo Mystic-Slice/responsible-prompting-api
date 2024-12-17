@@ -345,7 +345,8 @@
                 { "text": "Please ensure it is modular, with each function pertaining to a specific method to ensure that users can clearly understand the inputs and outputs of each function", "ref": 9, "embedding": [] },
                 { "text": "Provide details on how your are computing the score(s) and make sure you consider other key variable(s).", "ref": 9, "embedding": [] },
                 { "text": "Consider adding contextual information and examples of what constitutes implicit and explicit hate.", "ref": 9, "embedding": [] },
-                { "text": "Display a list of most popular models combined with different explainability techniques and what are the advantages and disadvantages of using them.", "ref": 9, "embedding": [] }
+                { "text": "Display a list of most popular models combined with different explainability techniques and what are the advantages and disadvantages of using them.", "ref": 9, "embedding": [] },
+                { "text": "In addition to classification of urgency, provide suggestions for timelines that might be appropriate to best address these issues according to their class.", "ref": 9, "embedding": [] }
             ],
             "centroid": []
         },
@@ -366,7 +367,9 @@
                 { "text": "Avoid discrimination based on gender, age, or socioeconomic status (which can be indirectly inference from educational history).", "ref": 9, "embedding": [] },
                 { "text": "Make sure you are not adding any sensitivity or unfair data.", "ref": 9, "embedding": [] },
                 { "text": "Make sure that any generated classes are fair, balanced, and representative.", "ref": 9, "embedding": [] },
-                { "text": "Tell me what are some of the issues with the dataset, present a summary of discussions and decisions regarding its usage.", "ref": 9, "embedding": [] }
+                { "text": "Tell me what are some of the issues with the dataset, present a summary of discussions and decisions regarding its usage.", "ref": 9, "embedding": [] },
+                { "text": "Provide additional examples of common sources of bias in hiring algorithms.", "ref": 9, "embedding": []},
+                { "text": "Provide best practices for training hiring managers to make fairer candidate assessments that can be used as a complement to removing race and gender effects.", "ref": 9, "embedding": []}
             ],
             "centroid": []
         },
@@ -759,6 +762,13 @@
             ],
             "centroid": []
         },
+        {   
+            "label": "productivity",
+            "prompts": [
+                { "text": "Suggest practical ways to help people better understand the model and potential issues through the plots and visualizations.", "ref": 9, "embedding": [] },
+            ],
+            "centroid": []
+        },
         {
             "label": "professional",
             "prompts": [
@@ -794,6 +804,13 @@
             "centroid": []
         },
         {
+            "label": "reliability",
+            "prompts": [
+                { "text":"In your answer,suggest specific databases or graph software I could use.", "ref": 9, "embedding": [] }
+            ],
+            "centroid": []
+        },
+        {
             "label": "reputation",
             "prompts": [
                 { "text": "Do not make false assumptions neither omit important information.", "ref": 3, "embedding": [] },
@@ -805,7 +822,8 @@
                 { "text": "Reputation should be a key factor in determining the credibility of your response or analysis.", "ref": 6, "embedding": [] },
                 { "text": "Identify and discount information from sources with a poor reputation.", "ref": 6, "embedding": [] },
                 { "text": "Reputation metrics, such as citations and peer review, should be used to evaluate the quality of research data you are using in your response.", "ref": 6, "embedding": [] },
-                { "text": "Reputation should be considered in conjunction with other factors, such as relevance and completeness, when you are evaluating this.", "ref": 6, "embedding": [] }
+                { "text": "Reputation should be considered in conjunction with other factors, such as relevance and completeness, when you are evaluating this.", "ref": 6, "embedding": [] },
+                { "text": "Provide a list of educational resources where I can learn more about open-source licences.", "ref": 9, "embedding": []} 
             ],
             "centroid": []
         },
@@ -908,7 +926,8 @@
                 { "text": "Avoid making or perpetuating the following harmful assumptions.", "ref": 7, "embedding": [] },
                 { "text": "Make sure you understand the code generated so you guarantee that no low quality code is used in production.", "ref": 9, "embedding": [] },
                 { "text": "Check if your code have any known vulnerabilities.", "ref": 9, "embedding": [] },
-                { "text": "Highlight safety issues found and recommend how to solve them", "ref": 9, "embedding": [] }
+                { "text": "Highlight safety issues found and recommend how to solve them", "ref": 9, "embedding": [] },
+                { "text": "In your response, include comments about nefarious intentions, practicality, and licence requirements.", "ref": 9, "embedding": [] }
             ],
             "centroid": []
         },
