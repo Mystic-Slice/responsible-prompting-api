@@ -762,10 +762,10 @@
             ],
             "centroid": []
         },
-        {   
+        {
             "label": "productivity",
             "prompts": [
-                { "text": "Suggest practical ways to help people better understand the model and potential issues through the plots and visualizations.", "ref": 9, "embedding": [] },
+                { "text": "Suggest practical ways to help people better understand the model and potential issues through the plots and visualizations.", "ref": 9, "embedding": [] }
             ],
             "centroid": []
         },
@@ -823,7 +823,7 @@
                 { "text": "Identify and discount information from sources with a poor reputation.", "ref": 6, "embedding": [] },
                 { "text": "Reputation metrics, such as citations and peer review, should be used to evaluate the quality of research data you are using in your response.", "ref": 6, "embedding": [] },
                 { "text": "Reputation should be considered in conjunction with other factors, such as relevance and completeness, when you are evaluating this.", "ref": 6, "embedding": [] },
-                { "text": "Provide a list of educational resources where I can learn more about open-source licences.", "ref": 9, "embedding": []} 
+                { "text": "Provide a list of educational resources where I can learn more about open-source licences.", "ref": 9, "embedding": []}
             ],
             "centroid": []
         },
