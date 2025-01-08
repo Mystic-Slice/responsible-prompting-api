@@ -168,7 +168,7 @@ def sort_by_similarity(e):
     return e['similarity']
 
 def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold = 0.3,
-                     add_upper_threshold = 0.5, remove_lower_threshold = 0.3,
+                     add_upper_threshold = 0.5, remove_lower_threshold = 0.1,
                      remove_upper_threshold = 0.5, model_id = 'sentence-transformers/all-minilm-l6-v2'):
     """
     Function that recommends prompts additions or removals.
@@ -308,10 +308,10 @@ def get_thresholds(prompts, prompt_json, api_url, headers, model_id = 'sentence-
     return thresholds
 
 def recommend_local(prompt, prompt_json, model_id, model_path, add_lower_threshold = 0.3,
-                     add_upper_threshold = 0.5, remove_lower_threshold = 0.3,
+                     add_upper_threshold = 0.5, remove_lower_threshold = 0.1,
                      remove_upper_threshold = 0.5):
     """
-    Function that recommends prompts additions or removals 
+    Function that recommends prompts additions or removals
     using a local model.
 
     Args:
@@ -350,7 +350,7 @@ def recommend_local(prompt, prompt_json, model_id, model_path, add_lower_thresho
     # # Using only the last sentence for the add recommendation
     model = SentenceTransformer(model_path)
     input_embedding = model.encode(input_sentences[-1])
-   
+
     for v in prompt_json['positive_values']:
         # Dealing with values without prompts and makinig sure they have the same dimensions
         if(len(v['centroid']) == len(input_embedding)):
