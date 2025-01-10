@@ -262,8 +262,21 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
         i += 1
 
     out['add'] = sorted(out['add'], key=sort_by_similarity, reverse=True)
+    values_map = {}
+    for item in out['add'][:]:
+        if(item['value'] in values_map):
+            out['add'].remove(item)
+        else:
+            values_map[item['value']] = item['similarity']
     out['add'] = out['add'][0:5]
-    out['remove'] = sorted( out['remove'], key=sort_by_similarity, reverse=True)
+
+    out['remove'] = sorted(out['remove'], key=sort_by_similarity, reverse=True)
+    values_map = {}
+    for item in out['remove'][:]:
+        if(item['value'] in values_map):
+            out['remove'].remove(item)
+        else:
+            values_map[item['value']] = item['similarity']
     out['remove'] = out['remove'][0:5]
     return out
 
@@ -395,7 +408,20 @@ def recommend_local(prompt, prompt_json, model_id, model_path, add_lower_thresho
         i += 1
 
     out['add'] = sorted(out['add'], key=sort_by_similarity, reverse=True)
+    values_map = {}
+    for item in out['add'][:]:
+        if(item['value'] in values_map):
+            out['add'].remove(item)
+        else:
+            values_map[item['value']] = item['similarity']
     out['add'] = out['add'][0:5]
-    out['remove'] = sorted( out['remove'], key=sort_by_similarity, reverse=True)
+
+    out['remove'] = sorted(out['remove'], key=sort_by_similarity, reverse=True)
+    values_map = {}
+    for item in out['remove'][:]:
+        if(item['value'] in values_map):
+            out['remove'].remove(item)
+        else:
+            values_map[item['value']] = item['similarity']
     out['remove'] = out['remove'][0:5]
     return out
