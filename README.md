@@ -276,22 +276,22 @@ python customize/customize_embeddings.py
 
 ### :brain: Sentences and social values
 
-- Review/consolidate social values used in the input JSON sentences file.
-- Review/consolidate sentences that are too specific to be recommended to multiple prompts, e.g., citing percentage numbers or cases that would hardly be shared among multiple input prompts.
+- Review/consolidate social values used in the input JSON sentences file (issues [#10](https://github.com/IBM/responsible-prompting-api/issues/10), [#12](https://github.com/IBM/responsible-prompting-api/issues/12), and [#14](https://github.com/IBM/responsible-prompting-api/issues/14)).
+- Fine-tune a model to generate sentences for the input JSON sentences file.
 
 ### :triangular_flag_on_post: Adversarial prompts
 
-- Include more recent adversarial sentences and prompt hacking techniques such as LLM-Flowbreaking to our input JSON sentences file. An interesting starting point for selecting those may be https://safetyprompts.com/.
+- Include more recent adversarial sentences and prompt hacking techniques such as LLM-Flowbreaking to our input JSON sentences file. An interesting starting point for selecting those may be https://safetyprompts.com/ (issues #30).
 
 ### :bar_chart: Explainability
 
-- Visualization feature to show how recommendations connect with the input prompt in the embedding space.
+- Visualization feature to show how recommendations connect with the input prompt in the embedding space (issue [#21](https://github.com/IBM/responsible-prompting-api/issues/21)).
 
 ### :robot: Recommendations
 
 - Implement additional methods and techniques for recommending sentences beyond semantic similarity.
 - Implement different levels of recommendations (terms, words, tokens?).
-- Add feature to recommend prompt templates for sentences before the user finishes a sentence, i.e., before typing period, question mark, or exclamation mark.
+- Add a feature to recommend prompt templates for sentences before the user finishes a sentence, i.e., before typing period, question mark, or exclamation mark.
 - Make recommendations less sensitive to typos.
 - Create a demo to showcase the recommendations in a chat-like user interface.
 - Keep a history of recommendations at the client-side (demo) so users can still visualize/use previous recommendations.
@@ -300,6 +300,7 @@ python customize/customize_embeddings.py
 
 - Automatic populate embeddings after the sentence file is changed.
 - Implement a feedback loop mechanism to log user choices after recommendations.
+- Create an endpoint supporting the test of new datasets.
 
 ## Repo file structure
 <details>
