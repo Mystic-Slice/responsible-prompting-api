@@ -274,6 +274,10 @@ python customize/customize_embeddings.py
 
 ## Roadmap
 
+### :+1: Community
+
+- Create playlists/tutorials on how to collaborate with this project.
+
 ### :brain: Sentences and social values
 
 - Review/consolidate social values used in the input JSON sentences file (issues [#10](https://github.com/IBM/responsible-prompting-api/issues/10), [#12](https://github.com/IBM/responsible-prompting-api/issues/12), and [#14](https://github.com/IBM/responsible-prompting-api/issues/14)).
@@ -281,7 +285,7 @@ python customize/customize_embeddings.py
 
 ### :triangular_flag_on_post: Adversarial prompts
 
-- Include more recent adversarial sentences and prompt hacking techniques such as LLM-Flowbreaking to our input JSON sentences file. An interesting starting point for selecting those may be https://safetyprompts.com/ (issues #30).
+- Include more recent adversarial sentences and prompt hacking techniques such as LLM-Flowbreaking to our input JSON sentences file. An interesting starting point for selecting those may be https://safetyprompts.com/ (issues [#30](https://github.com/IBM/responsible-prompting-api/issues/30)).
 
 ### :bar_chart: Explainability
 
