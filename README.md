@@ -443,7 +443,7 @@ This project is licensed under the [Apache License 2.0](LICENSE).
 
 Please cite the project as:
 
-```bibtext
+```bibtex
 @inproceedings{santana2025responsible,
   author    = {Vagner Figueredo de Santana and Sara Berger and Heloisa Candello and Tiago Machado and Cassia Sampaio Sanctos and Tianyu Su and Lemara Williams},
   title     = {Responsible Prompting Recommendation: Fostering Responsible {AI} Practices in Prompting-Time},
