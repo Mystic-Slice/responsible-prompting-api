@@ -33,7 +33,7 @@ import control.recommendation_handler as recommendation_handler
 from helpers import get_credentials, authenticate_api, save_model
 import config as cfg
 import logging
-import json
+import uuid
 
 
 app = Flask(__name__)
@@ -70,7 +70,7 @@ def recommend():
     prompt_json = recommendation_handler.populate_json()
     args = request.args
     prompt = args.get("prompt")
-    recommendation_json = recommendation_handler.recommend_prompt(prompt, prompt_json, 
+    recommendation_json = recommendation_handler.recommend_prompt(prompt, prompt_json,
                                                                   api_url, headers)
     logger.info(f'USER - {user_ip} - ID {id} - accessed recommend route')
     logger.info(f'RECOMMEND ROUTE - request: {prompt} response: {recommendation_json}')
@@ -86,7 +86,7 @@ def get_thresholds():
     args = request.args
     #print("args list = ", args)
     prompt = args.get("prompt")
-    thresholds_json = recommendation_handler.get_thresholds(prompt, prompt_json, api_url, 
+    thresholds_json = recommendation_handler.get_thresholds(prompt, prompt_json, api_url,
                                                             headers, model_id)
     return thresholds_json
 
@@ -115,7 +115,7 @@ def log():
         existing_data = []
 
     existing_data.update(new_data)
-    
+
     #log_data = request.json
     with open(f_path+FRONT_LOG_FILE, 'w') as f:
         json.dump(existing_data, f)
