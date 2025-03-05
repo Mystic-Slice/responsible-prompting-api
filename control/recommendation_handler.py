@@ -68,7 +68,7 @@ def populate_json(json_file_path = './prompt-sentences-main/prompt_sentences-all
         json_error = e
         print(f'Error when loading sentences json file: {json_error}')
         prompt_json = None
-        return prompt_json, json_error 
+        return prompt_json, json_error
 
 def query(texts, api_url, headers):
     """
@@ -199,10 +199,8 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
     Raises:
         Nothing.
     """
-    if(model_id == 'ibm/slate.30m.english.rtrvr'):
-        json_file = './prompt-sentences-main/prompt_sentences-slate-30m-english-rtrvr.json'
-    elif(model_id == 'ibm/slate.125m.english.rtrvr'):
-        json_file = './prompt-sentences-main/prompt_sentences-slate-125m-english-rtrvr.json'
+    if(model_id == 'ibm/granite-embedding-30m-english'):
+        json_file = './prompt-sentences-main/sentences_by_values-granite-embedding-30m-english.json'
     elif(model_id == 'baai/bge-large-en-v1.5' ):
         json_file = './prompt-sentences-main/prompt_sentences-bge-large-en-v1.5.json'
     elif(model_id == 'intfloat/multilingual-e5-large'):
@@ -344,10 +342,8 @@ def recommend_local(prompt, prompt_json, model_id, model_path, add_lower_thresho
     Raises:
         Nothing.
     """
-    if(model_id == 'ibm/slate.30m.english.rtrvr'):
-        json_file = './prompt-sentences-main/prompt_sentences-slate-30m-english-rtrvr.json'
-    elif(model_id == 'ibm/slate.125m.english.rtrvr'):
-        json_file = './prompt-sentences-main/prompt_sentences-slate-125m-english-rtrvr.json'
+    if(model_id == 'ibm/granite-embedding-30m-english'):
+        json_file = './prompt-sentences-main/sentences_by_values-granite-embedding-30m-english.json'
     elif(model_id == 'baai/bge-large-en-v1.5' ):
         json_file = './prompt-sentences-main/prompt_sentences-bge-large-en-v1.5.json'
     elif(model_id == 'intfloat/multilingual-e5-large'):
