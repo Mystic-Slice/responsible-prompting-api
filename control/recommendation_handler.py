@@ -234,7 +234,9 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
                         items_to_add.append({
                         'value': v['label'],
                         'prompt': p['text'],
-                        'similarity': d_prompt})
+                        'similarity': d_prompt,
+                        'x': p['x'],
+                        'y': p['y']})
                 out['add'] = items_to_add
 
     # Recommendation of values to remove from the current prompt
@@ -260,7 +262,9 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
                             'sentence': sentence,
                             'sentence_index': i,
                             'closest_harmful_sentence': p['text'],
-                            'similarity': d_prompt})
+                            'similarity': d_prompt,
+                            'x': p['x'],
+                            'y': p['y']})
                     out['remove'] = items_to_remove
         i += 1
 
@@ -379,7 +383,9 @@ def recommend_local(prompt, prompt_json, model_id, model_path, add_lower_thresho
                         items_to_add.append({
                         'value': v['label'],
                         'prompt': p['text'],
-                        'similarity': d_prompt})
+                        'similarity': d_prompt,
+                        'x': p['x'],
+                        'y': p['y']})
                 out['add'] = items_to_add
 
     # Recommendation of values to remove from the current prompt
@@ -404,7 +410,9 @@ def recommend_local(prompt, prompt_json, model_id, model_path, add_lower_thresho
                             'sentence': sentence,
                             'sentence_index': i,
                             'closest_harmful_sentence': p['text'],
-                            'similarity': d_prompt})
+                            'similarity': d_prompt,
+                            'x': p['x'],
+                            'y': p['y']})
                     out['remove'] = items_to_remove
         i += 1
 
