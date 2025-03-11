@@ -25,7 +25,7 @@ First, make sure you have:
 1. In your terminal, clone this repository and `cd` into `responsible-prompting-api` folder
 2. Create a virtual environment with `python -m venv <name-of-your-venv>`
 3. Activate your virtual environment with `source <name-of-your-venv>/bin/activate`
-4. Execute `pip install -r requirements.txt` to install project requirements
+4. Execute `pip install -r requirements.txt` or `python -m pip install -r requirements.txt` to install project requirements
 
 > [!CAUTION]
 > If you get errors related to packages in this step, try updating your `pip` by executing the following command on your console: `python -m pip install --upgrade pip`.
