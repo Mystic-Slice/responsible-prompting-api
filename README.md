@@ -115,28 +115,50 @@ The response should look like this:
   "add": [
     {
       "prompt": "What participatory methods might I use to gain a deeper understanding of the context and nuances of the data they are working with?",
-      "similarity": 0.49432045646542666,
-      "value": "participation"
+      "similarity": 0.4943203602149685,
+      "value": "participation",
+      "x": "3.4794168",
+      "y": "5.295474"
     },
     {
       "prompt": "Be inclusive of individuals with non-traditional backgrounds and experiences in your response.",
-      "similarity": 0.48868733465585423,
-      "value": "inclusion and diversity"
+      "similarity": 0.4886872990763964,
+      "value": "inclusion and diversity",
+      "x": "1.2500364",
+      "y": "4.8389783"
+    },
+    {
+      "prompt": "Provide references and citations for your data and findings.",
+      "similarity": 0.4846510034430018,
+      "value": "forthright and honesty",
+      "x": "3.6479006",
+      "y": "3.6989605"
     },
     {
       "prompt": "Can you suggest some techniques to handle missing data in this dataset?",
-      "similarity": 0.47995963514385853,
-      "value": "progress"
+      "similarity": 0.4799595728159147,
+      "value": "progress",
+      "x": "4.744805",
+      "y": "3.384345"
     },
     {
-      "prompt": "How do I make this dataset compatible with our analysis tools?",
-      "similarity": 0.47405629104549163,
-      "value": "transformation"
+      "prompt": "Tell me what are some of the issues with the dataset, present a summary of discussions and decisions regarding its usage.",
+      "similarity": 0.4777609105184786,
+      "value": "fairness",
+      "x": "4.1382217",
+      "y": "3.5133157"
+    }
+  ],
+  "input": [
+    {
+      "sentence": "Act as a data scientist with 8 years of experience.",
+      "x": "4.466023",
+      "y": "5.2328563"
     },
     {
-      "prompt": "Consider the potential impact of the data, question, or instruction on individuals and society as a whole.",
-      "similarity": 0.4739456017558868,
-      "value": "awareness"
+      "sentence": "Provide suggestions of what to do to make the data science project more inclusive.",
+      "x": "4.200346",
+      "y": "4.688103"
     }
   ],
   "remove": []
