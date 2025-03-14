@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/carbon-components/css/carbon-components.min.css">
     <script type="text/javascript" src="js/track.js"></script>
+    <script type="text/javascript" src="js/d3.v7.min.js"></script>
 </head>
 <body>
     <div class="bx--grid">
@@ -25,6 +26,8 @@
                         <button id="generate" type="submit" class="bx--btn bx--btn--primary">Generate</button>
                     </div>
 
+                    <div class="bx--form-item" id="graph"></div>
+
                     <div class="bx--form-item">
                         <label for="outcome" id="outcome-label" class="bx--label">Generated text</label>
                         <textarea id="outcome" name="outcome" class="bx--text-area" rows="12" placeholder="Generated text"></textarea>
@@ -34,7 +37,189 @@
         </div>
     </div>
     <script src="./js/jquery-3.7.1.min.js"></script>
-    <script>
+    <script lang="javascript">
+        const width = 600;
+        const height = 300;
+        const marginTop = 30;
+        const marginRight = 30;
+        const marginBottom = 30;
+        const marginLeft = 30;
+
+        const svg = d3.select("#graph").append("svg")
+            .attr("viewBox", [0, 0, width, height])
+            .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
+
+        const renderGraph = (recommendations) => {
+            svg.selectAll("*").remove(); // Clearing previous plots
+            var graphData = {nodes: [], edges: []}
+            var i = j = k = 0;
+            if( recommendations['input'].length > 0 ){
+                graphData.nodes.push({
+                    id: 0,
+                    x: recommendations['input'][0].x,
+                    y: recommendations['input'][0].y,
+                    // text: recommendations['input'][0].sentence
+                    text: 'S' + (i+1),
+                    type: 'input'
+                })
+                for( i = 1; i < recommendations['input'].length; i++ ){
+                    graphData.nodes.push({
+                        id: i,
+                        x: recommendations['input'][i].x,
+                        y: recommendations['input'][i].y,
+                        // text: recommendations['input'][i].sentence,
+                        text: 'S' + (i+1),
+                        type: 'input'
+                    });
+                    graphData.edges.push({ source: (i-1), target: i, type: 'input' });
+                }
+            }
+
+            // Adding nodes & edges for inclusion recommendations
+            if( recommendations['add'].length > 0 ){
+                for( j = 0; j < recommendations['add'].length; j++ ){
+                    graphData.nodes.push({
+                        id: i + j + 1,
+                        x: recommendations['add'][j].x,
+                        y: recommendations['add'][j].y,
+                        text: recommendations['add'][j].value,
+                        type: 'add'
+                    });
+                    graphData.edges.push({ source: (i-1), target: (i+j+1), type: 'add' });
+                    // console.debug( "adding edge: [" + i + ", " + (i+j+1) + "]" )
+                }
+            }
+
+            // Adding nodes & edges for removal recommendations
+            if( recommendations['remove'].length > 0 ){
+                for( var k = 0; k < 1; k++ ){ // Showing only the first removal recommendation
+                    graphData.nodes.push({
+                        id: i + j + k + 1,
+                        x: recommendations['remove'][k].x,
+                        y: recommendations['remove'][k].y,
+                        text: recommendations['remove'][k].value,
+                        type: 'remove'
+                    });
+                }
+            }
+
+            // Convert edge references to actual node objects
+            graphData.edges = graphData.edges.map(edge => ({
+                source: graphData.nodes.find(n => n.id === edge.source),
+                target: graphData.nodes.find(n => n.id === edge.target)
+            }));
+
+            const { nodes, edges } = graphData;
+
+            // Prepare the scales for positional encoding.
+            const x = d3.scaleLinear()
+                .domain(d3.extent(nodes, d => d.x * 2)).nice()
+                .range([marginLeft, width - marginRight]);
+
+            const y = d3.scaleLinear()
+                .domain(d3.extent(nodes, d => d.y * 2)).nice()
+                .range([height - marginBottom, marginTop]);
+
+            // Create the axes.
+            svg.append("g")
+                .attr("transform", `translate(0,${height - marginBottom})`)
+                .call(d3.axisBottom(x).ticks(width / 80))
+                .call(g => g.select(".domain").remove())
+                .call(g => g.append("text")
+                    .attr("x", width)
+                    .attr("y", marginBottom - 4)
+                    .attr("fill", "currentColor")
+                    .attr("text-anchor", "end")
+                    .text("Semantic dimension 1"));
+
+            svg.append("g")
+                .attr("transform", `translate(${marginLeft},0)`)
+                .call(d3.axisLeft(y))
+                .call(g => g.select(".domain").remove())
+                .call(g => g.append("text")
+                    .attr("x", -marginLeft)
+                    .attr("y", 10)
+                    .attr("fill", "currentColor")
+                    .attr("text-anchor", "start")
+                    .text("Semantic dimension 2"));
+
+            // Create the grid.
+            svg.append("g")
+                .attr("stroke", "#cccccc")
+                .attr("stroke-opacity", 0.5)
+                .call(g => g.append("g")
+                .selectAll("line")
+                .data(x.ticks())
+                .join("line")
+                    .attr("x1", d => 0.5 + x(d))
+                    .attr("x2", d => 0.5 + x(d))
+                    .attr("y1", marginTop)
+                    .attr("y2", height - marginBottom))
+                .call(g => g.append("g")
+                .selectAll("line")
+                .data(y.ticks())
+                .join("line")
+                    .attr("y1", d => 0.5 + y(d))
+                    .attr("y2", d => 0.5 + y(d))
+                    .attr("x1", marginLeft)
+                    .attr("x2", width - marginRight));
+
+            // Add a layer of dots.
+            svg.append("g")
+                .attr("stroke-width", 2.5)
+                .attr("stroke-opacity", 0.5)
+                .attr("fill", "none")
+                .selectAll("circle")
+                .data(nodes)
+                .join("circle")
+                .attr("stroke", d => d.type == "add" ? "green" : d.type == "input"? "#666" : "red" )
+                .attr("cx", d => x(d.x))
+                .attr("cy", d => y(d.y))
+                .attr("r", 3);
+
+            // Add a layer of labels.
+            svg.append("g")
+                .attr("font-family", "sans-serif")
+                .attr("text-opacity", 0.5)
+                .attr("font-size", 8)
+                .selectAll("text")
+                .data(nodes)
+                .join("text")
+                .attr("dy", "0.35em")
+                .attr("x", d => x(d.x) + 5)
+                .attr("y", d => y(d.y))
+                .text(d => d.text);
+
+            // Adding edges
+            svg.append("g")
+                .selectAll("line")
+                .data(edges)
+                .join("line")
+                .attr("stroke", "#666")
+                .attr("stroke-opacity", 0.5)
+                .attr("marker-end", "url(#arrow)")
+                .attr("x1", d => x(d.source.x))
+                .attr("y1", d => y(d.source.y))
+                .attr("x2", d => x(d.target.x))
+                .attr("y2", d => y(d.target.y))
+                .style("stroke-dasharray", d => d.target.type == "add" ? "3,3" : "");
+
+            // Define arrow marker for directed edges
+            svg.append("defs").append("marker")
+                .attr("id", "arrow")
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 10)
+                .attr("refY", 0)
+                .attr("markerWidth", 6)
+                .attr("markerHeight", 6)
+                .attr("orient", "auto")
+                .append("path")
+                .attr("d", "M0,-5L10,0L0,5")
+                .attr("fill", "#666");
+        };
+
+        // ------------------------------------------------
+
         // Init state
         if( $( "#prompt" ).val() == "" ){
             $( "#generate" ).attr( "disabled", true ) ;
@@ -137,6 +322,8 @@
                         if( data["add"].length == 0 && data["remove"].length == 0 ){
                             $( "#recommendation" ).html( "No recommendations found." ) ;
                         }
+
+                        renderGraph(data);
                     });
                 }
             }
