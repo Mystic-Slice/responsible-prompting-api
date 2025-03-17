@@ -15,19 +15,32 @@
                 <h1 class="bx--type-expressive-heading-03" style="margin-top: 1em;">Responsible Prompting</h1>
                 <p class="bx--type-body-long-01"><br>Please provide a prompt that would be sent to an LLM. Recommendations are performed in prompting-time, before content generation. The recommendations consider a curated dataset of values and prompts sentences. The recommendations are based on the similarity between the input sentences and our prompt sentences dataset.<br><br></p>
 
-                <form class="bx--form" id="demo">
-                    <div class="bx--form-item">
-                        <label for="prompt" class="bx--label">Prompt</label>
-                        <textarea id="prompt" name="prompt" class="bx--text-area" rows="4" placeholder="Enter your prompt">Act as a professional designer with 20 years of experience creating and testing UX interfaces and landing sites for a variety of IT applications. We are in need of more people and an increased budget to be able to keep up with clients' needs. What kind of evidence should I gather to support my demands to gain more resources?</textarea>
-                        <div id="recommendation" style="height: 3em;" class="bx--form__helper-text"></div>
-                    </div>
+                <div class="bx--tabs">
+                    <ul class="bx--tabs__nav">
+                      <li class="bx--tabs__nav-item bx--tabs__nav-item--selected" id="tab-1" data-target="#tab-content-1">
+                        <a class="bx--tabs__nav-link" href="#" onclick="$('#tab-content-1').toggle();$('#tab-1').toggleClass('bx--tabs__nav-item--selected');$('#tab-content-2').toggle();$('#tab-2').toggleClass('bx--tabs__nav-item--selected');">Prompt</a>
+                      </li>
+                      <li class="bx--tabs__nav-item" data-target="#tab-content-2" id="tab-2">
+                        <a class="bx--tabs__nav-link" href="#" onclick="$('#tab-content-1').toggle();$('#tab-1').toggleClass('bx--tabs__nav-item--selected');$('#tab-content-2').toggle();$('#tab-2').toggleClass('bx--tabs__nav-item--selected');">Graph</a>
+                      </li>
+                    </ul>
+                  </div>
 
+                <form class="bx--form" id="demo">
+                    <div class="bx--tab-content">
+                        <div id="tab-content-1" class="bx--tab-content__section">
+                            <div class="bx--form-item">
+                                <textarea id="prompt" name="prompt" class="bx--text-area" rows="15" placeholder="Enter your prompt">Act as a professional designer with 20 years of experience creating and testing UX interfaces and landing sites for a variety of IT applications. We are in need of more people and an increased budget to be able to keep up with clients' needs. What kind of evidence should I gather to support my demands to gain more resources?</textarea>
+                                <div id="recommendation" style="height: 3em;" class="bx--form__helper-text"></div>
+                            </div>
+                        </div>
+                        <div id="tab-content-2" class="bx--tab-content__section bx--tab-content--hidden" style="display: none;">
+                            <div class="bx--form-item" id="graph" style="background: #efefef"></div>
+                        </div>
+                    </div>
                     <div class="bx--form-item" style="margin-bottom: 2em;">
                         <button id="generate" type="submit" class="bx--btn bx--btn--primary">Generate</button>
                     </div>
-
-                    <div class="bx--form-item" id="graph"></div>
-
                     <div class="bx--form-item">
                         <label for="outcome" id="outcome-label" class="bx--label">Generated text</label>
                         <textarea id="outcome" name="outcome" class="bx--text-area" rows="12" placeholder="Generated text"></textarea>
@@ -39,15 +52,16 @@
     <script src="./js/jquery-3.7.1.min.js"></script>
     <script lang="javascript">
         const width = 600;
-        const height = 300;
+        const height = 200;
         const marginTop = 30;
         const marginRight = 30;
         const marginBottom = 30;
         const marginLeft = 30;
+        const nodeRadius = 3;
 
         const svg = d3.select("#graph").append("svg")
             .attr("viewBox", [0, 0, width, height])
-            .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
+            .attr("style", "max-width: 100%; height: auto; font: 8px sans-serif;");
 
         const renderGraph = (recommendations) => {
             svg.selectAll("*").remove(); // Clearing previous plots
@@ -175,7 +189,7 @@
                 .attr("stroke", d => d.type == "add" ? "green" : d.type == "input"? "#666" : "red" )
                 .attr("cx", d => x(d.x))
                 .attr("cy", d => y(d.y))
-                .attr("r", 3);
+                .attr("r", nodeRadius);
 
             // Add a layer of labels.
             svg.append("g")
@@ -197,7 +211,7 @@
                 .join("line")
                 .attr("stroke", "#666")
                 .attr("stroke-opacity", 0.5)
-                .attr("marker-end", "url(#arrow)")
+                // .attr("marker-end", "url(#arrow)")
                 .attr("x1", d => x(d.source.x))
                 .attr("y1", d => y(d.source.y))
                 .attr("x2", d => x(d.target.x))
