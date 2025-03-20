@@ -224,6 +224,8 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
     # Spliting prompt into sentences
     input_sentences = split_into_sentences(prompt)
 
+    # TODO: Request embeddings for input an d store in a input_embeddingS
+
     # Recommendation of values to add to the current prompt
     # Using only the last sentence for the add recommendation
     input_embedding = query(input_sentences[-1], api_url, headers)
@@ -251,7 +253,7 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
 
     # Recommendation of values to remove from the current prompt
     for sentence in input_sentences:
-        input_embedding = query(sentence, api_url, headers)
+        input_embedding = query(sentence, api_url, headers) # remote
         # Obtaining XY coords for input sentences from a parametric UMAP model
         if(len(prompt_json['negative_values'][0]['centroid']) == len(input_embedding) and sentence != ''):
             embeddings_umap = umap_model.transform(tf.expand_dims(pd.DataFrame(input_embedding), axis=0))
@@ -345,7 +347,7 @@ def get_thresholds(prompts, prompt_json, api_url, headers, model_id = 'sentence-
 
     return thresholds
 
-def recommend_local(prompt, prompt_json, model_id, model_path, add_lower_threshold = 0.3,
+def recommend_local(prompt, prompt_json, model_id, model_path = './models/all-MiniLM-L6-v2/', add_lower_threshold = 0.3,
                      add_upper_threshold = 0.5, remove_lower_threshold = 0.1,
                      remove_upper_threshold = 0.5):
     """
@@ -415,7 +417,7 @@ def recommend_local(prompt, prompt_json, model_id, model_path, add_lower_thresho
 
     # Recommendation of values to remove from the current prompt
     for sentence in input_sentences:
-
+        input_embedding = model.encode(sentence) # local
         # Obtaining XY coords for input sentences from a parametric UMAP model
         if(len(prompt_json['negative_values'][0]['centroid']) == len(input_embedding) and sentence != ''):
             embeddings_umap = umap_model.transform(tf.expand_dims(pd.DataFrame(input_embedding), axis=0))

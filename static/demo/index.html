@@ -7,6 +7,22 @@
     <link rel="stylesheet" href="https://unpkg.com/carbon-components/css/carbon-components.min.css">
     <script type="text/javascript" src="js/track.js"></script>
     <script type="text/javascript" src="js/d3.v7.min.js"></script>
+    <style type="text/css">
+        div.tooltip {
+            position: absolute;
+            text-align: left;
+            padding: 0.5em;
+            width: 20em;
+            min-height: 5em;
+            background: #fff;
+            color: #000;
+            border: 1px solid #000;
+            border-radius: 5px;
+            pointer-events: none;
+            font-size: inherit;
+            font-family: inherit;
+    }
+    </style>
 </head>
 <body>
     <div class="bx--grid">
@@ -21,7 +37,7 @@
                         <a class="bx--tabs__nav-link" href="#" onclick="$('#tab-content-1').toggle();$('#tab-1').toggleClass('bx--tabs__nav-item--selected');$('#tab-content-2').toggle();$('#tab-2').toggleClass('bx--tabs__nav-item--selected');">Prompt</a>
                       </li>
                       <li class="bx--tabs__nav-item" data-target="#tab-content-2" id="tab-2">
-                        <a class="bx--tabs__nav-link" href="#" onclick="$('#tab-content-1').toggle();$('#tab-1').toggleClass('bx--tabs__nav-item--selected');$('#tab-content-2').toggle();$('#tab-2').toggleClass('bx--tabs__nav-item--selected');">Graph</a>
+                        <a class="bx--tabs__nav-link" href="#" onclick="$('#tab-content-1').toggle();$('#tab-1').toggleClass('bx--tabs__nav-item--selected');$('#tab-content-2').toggle();$('#tab-2').toggleClass('bx--tabs__nav-item--selected');renderGraph($('#prompt').data('recommendations'))">Graph</a>
                       </li>
                     </ul>
                   </div>
@@ -63,7 +79,14 @@
             .attr("viewBox", [0, 0, width, height])
             .attr("style", "max-width: 100%; height: auto; font: 8px sans-serif;");
 
+        var tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
         const renderGraph = (recommendations) => {
+            if( !recommendations ){
+                return ;
+            }
             svg.selectAll("*").remove(); // Clearing previous plots
             var graphData = {nodes: [], edges: []}
             var i = j = k = 0;
@@ -72,8 +95,8 @@
                     id: 0,
                     x: recommendations['input'][0].x,
                     y: recommendations['input'][0].y,
-                    // text: recommendations['input'][0].sentence
-                    text: 'S' + (i+1),
+                    text: recommendations['input'][0].sentence,
+                    label: 'S' + (i+1),
                     type: 'input'
                 })
                 for( i = 1; i < recommendations['input'].length; i++ ){
@@ -81,8 +104,8 @@
                         id: i,
                         x: recommendations['input'][i].x,
                         y: recommendations['input'][i].y,
-                        // text: recommendations['input'][i].sentence,
-                        text: 'S' + (i+1),
+                        text: recommendations['input'][i].sentence,
+                        label: 'S' + (i+1),
                         type: 'input'
                     });
                     graphData.edges.push({ source: (i-1), target: i, type: 'input' });
@@ -96,7 +119,8 @@
                         id: i + j + 1,
                         x: recommendations['add'][j].x,
                         y: recommendations['add'][j].y,
-                        text: recommendations['add'][j].value,
+                        text: recommendations['add'][j].prompt,
+                        label: recommendations['add'][j].value,
                         type: 'add'
                     });
                     graphData.edges.push({ source: (i-1), target: (i+j+1), type: 'add' });
@@ -111,7 +135,8 @@
                         id: i + j + k + 1,
                         x: recommendations['remove'][k].x,
                         y: recommendations['remove'][k].y,
-                        text: recommendations['remove'][k].value,
+                        text: recommendations['remove'][k].closest_harmful_sentence,
+                        label: recommendations['remove'][k].value,
                         type: 'remove'
                     });
                 }
@@ -200,9 +225,36 @@
                 .data(nodes)
                 .join("text")
                 .attr("dy", "0.35em")
-                .attr("x", d => x(d.x) + 5)
+                .attr("x", d => x(d.x)+5)
                 .attr("y", d => y(d.y))
-                .text(d => d.text);
+                .text(d => d.label)
+                .on('mousemove', function (d, i) {
+                    d3.select(this).transition()
+                        .duration("50")
+                        .attr("text-opacity", 1.0)
+                        .attr("stroke", "white")
+                        .attr("stroke-width", 3)
+                        .style("paint-order", "stroke fill")
+                        .attr("fill", d => d.type == "add" ? "green" : d.type == "input"? "black" : "red" )
+                        tooltip.transition()
+                            .duration(50)
+                            .style("opacity", 1);
+                        tooltip.html( "<strong>" + i.label + ":</strong><br>" + i.text )
+                            .style("left", (event.pageX + 10) + "px")
+                            .style("top", (event.pageY + 10) + "px");
+               ;
+                })
+                .on('mouseout', function (d, i) {
+                    d3.select(this).transition()
+                        .duration("50")
+                        .attr("text-opacity", 0.5)
+                        .attr("stroke-width", 0)
+                        .style("paint-order", "stroke fill")
+                        .attr("fill", "black")
+                        tooltip.transition()
+                            .duration(50)
+                            .style("opacity", 0);
+                });
 
             // Adding edges
             svg.append("g")
@@ -211,25 +263,12 @@
                 .join("line")
                 .attr("stroke", "#666")
                 .attr("stroke-opacity", 0.5)
-                // .attr("marker-end", "url(#arrow)")
-                .attr("x1", d => x(d.source.x))
+                .attr("x1", d => x(d.source.x)+(d.source.x<d.target.x?1.3*nodeRadius:nodeRadius*-1.3))
                 .attr("y1", d => y(d.source.y))
-                .attr("x2", d => x(d.target.x))
+                .attr("x2", d => x(d.target.x)+(d.source.x>d.target.x?1.3*nodeRadius:nodeRadius*-1.3))
                 .attr("y2", d => y(d.target.y))
                 .style("stroke-dasharray", d => d.target.type == "add" ? "3,3" : "");
 
-            // Define arrow marker for directed edges
-            svg.append("defs").append("marker")
-                .attr("id", "arrow")
-                .attr("viewBox", "0 -5 10 10")
-                .attr("refX", 10)
-                .attr("refY", 0)
-                .attr("markerWidth", 6)
-                .attr("markerHeight", 6)
-                .attr("orient", "auto")
-                .append("path")
-                .attr("d", "M0,-5L10,0L0,5")
-                .attr("fill", "#666");
         };
 
         // ------------------------------------------------
@@ -300,6 +339,7 @@
                 if( last_char == "." || last_char == "?" || last_char == "!" ){
                     $( "#recommendation" ).html( 'Requesting recommendations: <div class="bx--tag bx--tag--gray bx--tag--deletable">...</div>' ) ;
                     var api_url = "/recommend?prompt="
+                    // var api_url = "/recommend_local?prompt="
                     var p = $( "#prompt" ).val() ;
 
                     // API request
@@ -337,7 +377,8 @@
                             $( "#recommendation" ).html( "No recommendations found." ) ;
                         }
 
-                        renderGraph(data);
+                        $("#prompt").data( "recommendations", data );
+                        // renderGraph(data);
                     });
                 }
             }
