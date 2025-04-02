@@ -1,0 +1,8 @@
+# .gitignore
+# Ignore C/C++ source files
+*.c
+*.cpp
+*.h
+
+# Ignore build directories
+build/
