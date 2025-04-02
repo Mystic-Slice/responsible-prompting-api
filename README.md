@@ -426,7 +426,7 @@ use the DCO to manage contributions. The DCO bot will help enforce that.
 Please contact one of the IBM GH Org stewards.** -->
 
 <!-- Questions can be useful but optional, this gives you a place to say, "This is how to contact this project maintainers or create PRs -->
-If you have any questions or issues, please [create a new issue](issues).
+If you have any questions or issues, please [create a new issue](/issues).
 
 Pull requests are very welcome! Make sure your patches are well tested.
 Ideally create a topic branch for every separate change you make.
