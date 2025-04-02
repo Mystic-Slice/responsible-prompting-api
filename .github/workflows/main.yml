@@ -22,7 +22,7 @@ jobs:
         region: 'us-south'
         project: 'brl-all'
         component: 'app'
-        name: 'responsible-prompting-api-deploy'
+        name: 'responsible-prompting-api'
         build-source: './'
         cpu: 1
         memory: 8G
