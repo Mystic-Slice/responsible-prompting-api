@@ -25,4 +25,4 @@ jobs:
         name: 'responsible-prompting-api'
         build-source: './'
         cpu: 1
-        memory: 4G
+        memory: 8G
