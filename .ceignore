@@ -9,3 +9,5 @@ build/
 
 # Ignore models directories
 models/
+
+prompt-sentences-main/
