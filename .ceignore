@@ -6,3 +6,6 @@
 
 # Ignore build directories
 build/
+
+# Ignore models directories
+models/
