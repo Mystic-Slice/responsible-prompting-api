@@ -1,6 +1,3 @@
-- name: Code Engine GitHub Action
-  uses: IBM/code-engine-github-action@v1.0.0
-  
 name: Deploy App to Code Engine
 
 on:
