@@ -9,7 +9,7 @@ COPY .env /opt/microservices/
 COPY app.py /opt/microservices/
 COPY config.py /opt/microservices/
 COPY helpers /opt/microservices/helpers
-COPY models /opt/microservices/models
+# COPY models /opt/microservices/models
 
 RUN pip install --upgrade pip \
 	&& pip install --upgrade pipenv\
