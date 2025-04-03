@@ -24,5 +24,6 @@ jobs:
         component: 'app'
         name: 'responsible-prompting-deploy'
         build-source: './'
-        cpu: 1
-        memory: 8G
+        # cpu: 1
+        # memory: 8G
+        # ephemeral-storage: 4.4
