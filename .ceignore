@@ -6,6 +6,6 @@
 
 # Ignore build directories
 build/
-models/umap
+models/
 
 .git
