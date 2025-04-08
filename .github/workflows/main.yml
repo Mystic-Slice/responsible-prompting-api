@@ -3,31 +3,14 @@ name: Deploy App to Code Engine
 on:
   push:
     branches:
-      - deploy
+      - main
   workflow_dispatch:
 
 jobs:
+
   deploy-app:
     runs-on: ubuntu-latest
     steps:
-    - name: Install IBM Cloud CLI
-      run: curl -sL https://raw.githubusercontent.com/IBM-Cloud/ibm-cloud-developer-tools/master/linux-installer/idt-installer | bash
-    
-    - name: Install IBM Cloud Code Engine CLI plugin
-      run: ibmcloud plugin install code-engine
-
-    - name: Login IBM Cloud
-      run: ibmcloud login --apikey "${{ secrets.IBM_IAM_API_KEY }}" -r us-south
-
-    - name: X
-      run: ibmcloud target -g brl-all
-
-    - name: X2
-      run: ibmcloud ce project select -n brl-all
-
-    - name: Y
-      run: ibmcloud ce application update --name responsible-prompting-api --build-source git@github.com:IBM/responsible-prompting-api.git
-      
     - name: Check out code
       uses: actions/checkout@v3
 
@@ -41,6 +24,4 @@ jobs:
         component: 'app'
         name: 'responsible-prompting-deploy'
         build-source: './'
-        # cpu: 1
-        # memory: 8G
-        # ephemeral-storage: 4.4
+        build-size: large
