@@ -7,7 +7,19 @@ on:
   workflow_dispatch:
 
 jobs:
-
+  build:
+    runs-on: self-hosted 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Podman
+        run: |
+              sudo apt-get update
+              sudo apt-get install -y podman
+      - name: Run Podman command
+        run: |
+              podman build --platform=linux/amd64 . -t responsible-prompting-api:v0
+              
   deploy-app:
     runs-on: ubuntu-latest
     steps:
