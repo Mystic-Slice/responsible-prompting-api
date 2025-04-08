@@ -26,7 +26,7 @@ jobs:
       run: ibmcloud ce project select -n brl-all
 
     - name: Y
-      run: ibmcloud ce application update --name responsible-prompting-api --build-git-repo-secret --build-source git@github.com:IBM/responsible-prompting-api.git
+      run: ibmcloud ce application update --name responsible-prompting-api --build-source git@github.com:IBM/responsible-prompting-api.git
       
     - name: Check out code
       uses: actions/checkout@v3
