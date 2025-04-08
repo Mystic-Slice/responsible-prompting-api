@@ -3,3 +3,4 @@ responsible_prompt/
 .git
 .cache
 *.md
+models/
