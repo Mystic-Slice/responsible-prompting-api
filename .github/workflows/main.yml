@@ -7,23 +7,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Install Podman
-        run: |
-              sudo apt-get update
-              sudo apt-get install -y podman
-      - name: Run Podman command
-        run: |
-              podman build --platform=linux/amd64 . -t responsible-prompting-api:v0
-              
   deploy-app:
     runs-on: ubuntu-latest
-    needs: [build]
     steps:
+    - name: Install IBM Cloud CLI
+      run: curl -sL https://raw.githubusercontent.com/IBM-Cloud/ibm-cloud-developer-tools/master/linux-installer/idt-installer | bash
+    
+    - name: Install IBM Cloud Code Engine CLI plugin
+      run: ibmcloud plugin install code-engine
+
+    - name: Login IBM Cloud
+      run: ibmcloud login --apikey "${{ secrets.IBM_IAM_API_KEY }}" -r us-south
+
+    - name: X
+      run: ibmcloud ce project select -n brl-all
+
+    - name: Y
+      run: ibmcloud ce application update --name responsible-prompting-api --build-git-repo-secret --build-source git@github.com:IBM/responsible-prompting-api.git
+      
     - name: Check out code
       uses: actions/checkout@v3
 
