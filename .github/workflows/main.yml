@@ -20,6 +20,9 @@ jobs:
       run: ibmcloud login --apikey "${{ secrets.IBM_IAM_API_KEY }}" -r us-south
 
     - name: X
+      run: ibmcloud target -g brl-all
+
+    - name: X2
       run: ibmcloud ce project select -n brl-all
 
     - name: Y
