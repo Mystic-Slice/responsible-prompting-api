@@ -3,7 +3,7 @@ name: Deploy App to Code Engine
 on:
   push:
     branches:
-      - main
+      - deploy
   workflow_dispatch:
 
 jobs:
