@@ -5,7 +5,7 @@ COPY control /opt/microservices/control
 COPY prompt-sentences-main /opt/microservices/prompt-sentences-main
 COPY static /opt/microservices/static
 COPY requirements.txt /opt/microservices/
-COPY .env /opt/microservices/
+# COPY .env /opt/microservices/
 COPY app.py /opt/microservices/
 COPY config.py /opt/microservices/
 COPY helpers /opt/microservices/helpers
