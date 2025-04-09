@@ -2,7 +2,7 @@ FROM python:3.9
 ENV PYTHONUNBUFFERED=1
 
 COPY control /opt/microservices/control
-COPY prompt-sentences-main /opt/microservices/prompt-sentences-main
+# COPY prompt-sentences-main /opt/microservices/prompt-sentences-main
 COPY static /opt/microservices/static
 COPY requirements.txt /opt/microservices/
 # COPY .env /opt/microservices/
