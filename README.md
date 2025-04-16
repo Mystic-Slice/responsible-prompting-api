@@ -42,27 +42,22 @@ HF_TOKEN=<include-token-here>
 
 ### Connecting to LLMs hosted on Hugging Face
 
-The default demo version is sending the prompt to IBM granite. However, you send the resulting prompt to any LLM.
-Next we show how to send the resulting prompt to LLMs hosted on Hugging Face.
-
 1. Run the server (if it is not already running)
-2. Comment the current function attached to the `submit` event handler in the [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html) file:
-```
-$( "#demo" ).on( "submit", function( e ){ // Granite
-...
-```
-3. Still in the [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html) file, uncomment the Hugging Face template function for the `submit` event handler in the:
+2. In the [index.html](https://github.com/IBM/responsible-prompting-api/blob/main/static/demo/index.html) file, find the function for the `submit` event handler. It starts with:
 ```
 $( "#demo" ).on( "submit", function( e ){ // Hugging Face
 ...
 ```
-4. Inside the template function you've just uncommented, replace `<include-token-here>` with your hugging face access token:
+> [!NOTE]
+> When customizing the `$ajax` call, please make sure that the json data follows the specifications of the LLM being used.
+
+3. Inside this function, replace `<include-token-here>` with your hugging face access token:
 ```
 headers: {"Authorization": "Bearer <include-token-here>"}
 ```
 
 > [!CAUTION]
-> When customizing the `$ajax` call, please make sure that the json data follows the specifications of the LLM being used.
+> Your Hugging Face token will be visible in the code, remember to remove the token before committing or after running the prototype to avoid displaying sensitive data. In case the token has been exposed, follow the HF [https://huggingface.co/docs/hub/en/security-tokens](instructions to invalidate it).
 
 5. In your browser, access http://127.0.0.1:8080/static/demo/index.html
 
