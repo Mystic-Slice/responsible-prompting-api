@@ -317,6 +317,36 @@
             }
         }
 
+        function rephrase_recommendation(p){
+            console.log(p);
+            var api_url = "/rephrase_local";
+            var data = {
+                "sentence": p,
+                "value": "misinformation and deception",
+                "sentence_index": 5
+            };
+            
+            $.ajax({
+                type: "POST",
+                url: api_url,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function(response) {
+                    // Handle the success response
+                    console.log("Success:", response);
+                    if (response['suggestion']) {
+                        $( "#prompt" ).val( $( "#prompt" ).val().replace(p, response['suggestion'] ) ) ;
+                        $( "#recommendation" ).html( "" ) ;
+                        $( "#prompt" ).trigger( "keyup" )
+                    }
+                },
+                error: function(error) {
+                    // Handle the error response
+                    console.error("Error:", error);
+                }
+            });
+        }
+
         // Listening to changes performed on the prompt input field
         $( "#prompt" ).on( "keyup", function( e ){
 
@@ -355,6 +385,7 @@
                                 var sentence_entity = data["remove"][i].sentence.replaceAll( "'", "&apos;" ) ;
                                 var sentence_value = data["remove"][i].value.replaceAll( "'", "\\'" ) ;
                                 $( "#recommendation" ).append( '<div class="bx--tag bx--tag--red bx--tag--deletable" style="cursor: pointer;" onmouseover="preview_remove_recommendation(\''+ sentence + '\', \'show\')" onmouseout="preview_remove_recommendation(\''+ sentence + '\', \'hide\')" onclick="remove_recommendation(\''+ sentence + '\')">x ' + sentence_value + '</div>' ) ;
+                                $( "#recommendation" ).append( '<div class="bx--tag bx--tag--gray bx--tag--deletable" style="cursor: pointer;" onclick="rephrase_recommendation(\''+ sentence + '\', \''+ sentence_value + '\')">! ' + sentence_value + '</div>' ) ;
                                 break ; // Showing only once removal recommendation at a time
                             }
                         }
@@ -383,7 +414,7 @@
                 }
             }
         });
-
+        
         // // Generation request
         // $( "#demo" ).on( "submit", function(e){ // Hugging Face
         //     var out = "" ;

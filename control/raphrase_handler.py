@@ -47,8 +47,8 @@ def rephrase_local(recommendation, hf_token, model_id = "meta-llama/Meta-Llama-3
         use_auth_token = hf_token
     )
 
-    system_prompt = "Respond strictly in the following format between these tags: <new_sentence></new_sentence>"
-    user_prompt = "Rewrite the following sentence to avoid " + recommendation["value"] + ". DO NOT INTERPRET IT.\n" + recommendation["sentence"]
+    system_prompt = "You are a person who rewrite sentences. Respond strictly in the following format between these tags: <new_sentence></new_sentence>"
+    user_prompt = "Rewrite the following sentence to avoid " + recommendation["value"] + ". DO NOT INTERPRET THE SENTENCE.\nSentence:" + recommendation["sentence"]
     response = generate(model, tokenizer, system_prompt, user_prompt)
 
     return {
