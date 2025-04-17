@@ -30,6 +30,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from flask_restful import Resource, Api, reqparse
 import control.recommendation_handler as recommendation_handler
+import control.raphrase_handler as raphrase_handler
 from helpers import get_credentials, authenticate_api, save_model
 import config as cfg
 import logging
@@ -102,6 +103,17 @@ def recommend_local():
     local_recommendation_json = recommendation_handler.recommend_local(prompt, prompt_json,
                                                                        model_id, model_path)
     return local_recommendation_json
+
+@app.route("/rephrase_local", methods=['POST'])
+@cross_origin()
+def rephrase_local():
+    recommendation = request.get_json()
+    hf_token, _ = get_credentials.get_credentials()
+
+    response = raphrase_handler.rephrase_local(recommendation, hf_token)
+    print(response)
+    
+    return response, 200
 
 @app.route("/log", methods=['POST'])
 @cross_origin()

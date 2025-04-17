@@ -214,6 +214,63 @@
           }
         }
       }
+    },
+    "/rephrase_local": {
+      "post": {
+        "tags": [
+          "rephrase_local"
+        ],
+        "summary": "Obtain a rephrasal suggestion for a sentence from a model running locally",
+        "description": "Given an input sentence, returns a replacement suggestion of a harmful sentence.",
+        "required": true,
+        "requestBody":{
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/recommendation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful recommendation"
+          },
+          "404": {
+            "description": "invalid prompt"
+          }
+        }
+      }
     }
+  },
+  "components":
+  {
+    "schemas":
+      {
+        "recommendation":
+          {
+            "properties":
+            {
+              "sentence": {
+                "description": "Provide a sentence to be rephrased.",
+                "type": "string",
+                "required": true,
+                "example": "What kind of evidence should I gather to support my demands to gain more resources?"
+              },
+              "value": {
+                "description": "Provide the violated value identified in the provided sentence.",
+                "type": "string",
+                "required": true,
+                "example": "misinformation and deception"
+              },
+              "sentence_index": {
+                "description": "Index of the sentence with harmful content.",
+                "type": "int",
+                "required": true,
+                "example": 5
+              }
+            }
+          }
+      }
   }
 }
