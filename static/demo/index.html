@@ -390,6 +390,7 @@
 
         // Generation request
         $( "#demo" ).on( "submit", function(e){ // Hugging Face
+
             $( "#generate" ).toggleClass( "bx--btn--disabled" ) ;
             ( function loading_animation(){
                 if( $( "#outcome" ).attr( "placeholder" ) == "" ){
@@ -439,6 +440,7 @@
                     }
 
                     out = data[0].generated_text.split("");
+
                     $( "#outcome" ).append( "\n\n+ ------------------------------------\n| Model: " + model_id + "\n| Temperature: " + temperature + "\n| Max new tokens: " + max_new_tokens + "\n+ ------------------------------------\n\n" ) ;
                     // Animating the generated output
                     ( function typing_animation(){
