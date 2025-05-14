@@ -98,7 +98,7 @@ def query(texts, api_url, headers):
             warnings.warn("Word count:{}".format(n_words))
     if('sentence-transformers/all-MiniLM-L6-v2' in api_url):
         model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
-        out = model.encode(texts)
+        out = model.encode(texts).tolist()
     else:
         response = requests.post(api_url, headers=headers, json={"inputs": texts, "options":{"wait_for_model":True}})
         out = response.json()
