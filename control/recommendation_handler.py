@@ -342,8 +342,8 @@ def get_thresholds(prompts, prompt_json, api_url, headers, model_id = 'sentence-
     thresholds = {}
     thresholds['add_lower_threshold'] = round(add_similarities_df.describe([.1]).loc['10%', 'similarity'], 1)
     thresholds['add_higher_threshold'] = round(add_similarities_df.describe([.9]).loc['90%', 'similarity'], 1)
-    thresholds['upper_lower_threshold'] = round(remove_similarities_df.describe([.1]).loc['10%', 'similarity'], 1)
-    thresholds['upper_higher_threshold'] = round(remove_similarities_df.describe([.9]).loc['90%', 'similarity'], 1)
+    thresholds['remove_lower_threshold'] = round(remove_similarities_df.describe([.1]).loc['10%', 'similarity'], 1)
+    thresholds['remove_higher_threshold'] = round(remove_similarities_df.describe([.9]).loc['90%', 'similarity'], 1)
 
     return thresholds
 
