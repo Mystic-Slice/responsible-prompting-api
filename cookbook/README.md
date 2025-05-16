@@ -10,6 +10,6 @@ The following notebooks exemplify workflow steps, features, and possible uses of
 4. [Recommend Thresholds](./recommend_thresholds.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IBM/responsible-prompting-api/blob/develop/cookbook/recommend_thresholds.ipynb)
 5. [Populate Coordinates](./populate_coordinates.ipynb)
 
-## Assessment with External Data
+## Evaluation
 
-1. [Test Recommendations with a Prompt Dataset](./test_recommendations.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]
+1. [Test Recommendations with a Prompt Dataset](./test_recommendations.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IBM/responsible-prompting-api/blob/develop/cookbook/test_recommendations.ipynb)
