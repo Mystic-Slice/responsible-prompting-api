@@ -23,4 +23,11 @@ RUN pip install --upgrade pip \
 USER 1001
 EXPOSE 8080
 WORKDIR /opt/microservices/
-CMD ["python", "app.py", "8080"]
+# CMD ["python", "app.py", "8080"]
+
+
+# RUN useradd -m -u 1000 user
+# USER user
+# ENV PATH="/home/user/.local/bin:$PATH"
+
+CMD ["python", "app.py", "--host", "0.0.0.0", "--port", "7860"]

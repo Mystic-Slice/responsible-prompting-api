@@ -37,7 +37,7 @@ import uuid
 import json
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 # configure logging
 logging.basicConfig(
@@ -60,7 +60,7 @@ FRONT_LOG_FILE = 'front_log.json'
 def index():
     user_ip = request.remote_addr
     logger.info(f'USER {user_ip} - ID {id} - started the app')
-    return "Ready!"
+    return app.send_static_file('demo/index.html')
 
 @app.route("/recommend", methods=['GET'])
 @cross_origin()
@@ -124,4 +124,4 @@ def log():
 
 if __name__=='__main__':
     debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
-    app.run(host='0.0.0.0', port='8080', debug=debug_mode)
+    app.run(host='0.0.0.0', port='7860', debug=debug_mode)
