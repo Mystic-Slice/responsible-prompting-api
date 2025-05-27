@@ -822,7 +822,7 @@
                 { "text": "Identify and discount information from sources with a poor reputation.", "ref": 6, "embedding": [] },
                 { "text": "Reputation metrics, such as citations and peer review, should be used to evaluate the quality of research data you are using in your response.", "ref": 6, "embedding": [] },
                 { "text": "Reputation should be considered in conjunction with other factors, such as relevance and completeness, when you are evaluating this.", "ref": 6, "embedding": [] },
-                { "text": "Provide a list of educational resources where I can learn more about open-source licences.", "ref": 9, "embedding": []}
+                { "text": "Provide a list of educational resources where I can learn more about open-source licenses.", "ref": 9, "embedding": []}
             ],
             "centroid": []
         },
@@ -928,7 +928,7 @@
                 { "text": "Make sure you understand the code generated so you guarantee that no low quality code is used in production.", "ref": 9, "embedding": [] },
                 { "text": "Check if your code have any known vulnerabilities.", "ref": 9, "embedding": [] },
                 { "text": "Highlight safety issues found and recommend how to solve them", "ref": 9, "embedding": [] },
-                { "text": "In your response, include comments about nefarious intentions, practicality, and licence requirements.", "ref": 9, "embedding": [] },
+                { "text": "In your response, include comments about nefarious intentions, practicality, and license requirements.", "ref": 9, "embedding": [] },
                 { "text": "Make sure that automation routines properly manage risks of device overheating or fire.", "ref": 12, "embedding": [] },
                 { "text": "Avoid setups in which devices are kept on high temperature for extended periods.", "ref": 12, "embedding": [] },
                 { "text": "Create a safety checklist for solutions provided.", "ref": 12, "embedding": [] }
