@@ -210,15 +210,20 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
     """
     if(model_id == 'baai/bge-large-en-v1.5' ):
         json_file = './prompt-sentences-main/prompt_sentences-bge-large-en-v1.5.json'
-        umap_model = load_ParametricUMAP('./models/umap/BAAI/bge-large-en-v1.5/')
+        umap_folder = './models/umap/BAAI/bge-large-en-v1.5/'
     elif(model_id == 'intfloat/multilingual-e5-large'):
         json_file = './prompt-sentences-main/prompt_sentences-multilingual-e5-large.json'
-        umap_model = load_ParametricUMAP('./models/umap/intfloat/multilingual-e5-large/')
+        umap_folder = './models/umap/intfloat/multilingual-e5-large/'
     else: # fall back to all-minilm as default
         json_file = './prompt-sentences-main/prompt_sentences-all-minilm-l6-v2.json'
-        umap_model = load_ParametricUMAP('./models/umap/sentence-transformers/all-MiniLM-L6-v2/')
+        umap_folder = './models/umap/sentence-transformers/all-MiniLM-L6-v2/'
 
-    prompt_json = json.load(open(json_file))
+    # Loading the encoder and config separately due to a bug
+    encoder = tf.keras.models.load_model( umap_folder )
+    with open( f"{umap_folder}umap_config.json", "r" ) as f:
+        config = json.load( f )
+    umap_model = ParametricUMAP( encoder=encoder, **config )
+    prompt_json = json.load( open( json_file ) )
 
     # Output initialization
     out, out['input'], out['add'], out['remove'] = {}, {}, {}, {}
@@ -371,15 +376,20 @@ def recommend_local(prompt, prompt_json, model_id, model_path = './models/all-Mi
     """
     if(model_id == 'baai/bge-large-en-v1.5' ):
         json_file = './prompt-sentences-main/prompt_sentences-bge-large-en-v1.5.json'
-        umap_model = load_ParametricUMAP('./models/umap/BAAI/bge-large-en-v1.5/')
+        umap_folder = './models/umap/BAAI/bge-large-en-v1.5/'
     elif(model_id == 'intfloat/multilingual-e5-large'):
         json_file = './prompt-sentences-main/prompt_sentences-multilingual-e5-large.json'
-        umap_model = load_ParametricUMAP('./models/umap/intfloat/multilingual-e5-large/')
+        umap_folder = './models/umap/intfloat/multilingual-e5-large/'
     else: # fall back to all-minilm as default
         json_file = './prompt-sentences-main/prompt_sentences-all-minilm-l6-v2.json'
-        umap_model = load_ParametricUMAP('./models/umap/sentence-transformers/all-MiniLM-L6-v2/')
+        umap_folder = './models/umap/sentence-transformers/all-MiniLM-L6-v2/'
 
-    prompt_json = json.load(open(json_file))
+    # Loading the encoder and config separately due to a bug
+    encoder = tf.keras.models.load_model( umap_folder )
+    with open( f"{umap_folder}umap_config.json", "r" ) as f:
+        config = json.load( f )
+    umap_model = ParametricUMAP( encoder=encoder, **config )
+    prompt_json = json.load( open( json_file ) )
 
     # Output initialization
     out, out['input'], out['add'], out['remove'] = {}, {}, {}, {}
