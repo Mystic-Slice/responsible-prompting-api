@@ -67,13 +67,16 @@ def index():
 @cross_origin()
 def recommend():
     user_ip = request.remote_addr
-    hf_token, hf_url = get_credentials.get_credentials()
-    api_url, headers = authenticate_api.authenticate_api(hf_token, hf_url)
+    # hf_token, hf_url = get_credentials.get_credentials()
+    # api_url, headers = authenticate_api.authenticate_api(hf_token, hf_url)
     prompt_json, _ = recommendation_handler.populate_json()
     args = request.args
     prompt = args.get("prompt")
-    embedding_fn = recommendation_handler.get_embedding_func(inference='local', model_id='sentence-transformers/all-MiniLM-L6-v2')
-    recommendation_json = recommendation_handler.recommend_prompt(prompt, prompt_json, embedding_fn)
+
+    model_id='sentence-transformers/all-MiniLM-L6-v2'
+    embedding_fn = recommendation_handler.get_embedding_func(inference='local', model_id=model_id)
+
+    recommendation_json = recommendation_handler.recommend_prompt(prompt, prompt_json, embedding_fn, model_id=model_id, get_xy=True)
     logger.info(f'USER - {user_ip} - ID {id} - accessed recommend route')
     logger.info(f'RECOMMEND ROUTE - request: {prompt} response: {recommendation_json}')
     return recommendation_json
@@ -84,7 +87,7 @@ def get_thresholds():
     hf_token, hf_url = get_credentials.get_credentials()
     api_url, headers = authenticate_api.authenticate_api(hf_token, hf_url)
     prompt_json = recommendation_handler.populate_json()
-    model_id = 'sentence-transformers/all-minilm-l6-v2'
+    model_id = 'sentence-transformers/all-MiniLM-L6-v2'
     args = request.args
     #print("args list = ", args)
     prompt = args.get("prompt")
@@ -100,8 +103,8 @@ def recommend_local():
     args = request.args
     print("args list = ", args)
     prompt = args.get("prompt")
-    embedding_fn = recommendation_handler.get_embedding_func(inference='local', model_id='sentence-transformers/all-MiniLM-L6-v2')
-    local_recommendation_json = recommendation_handler.recommend_local(prompt, prompt_json, embedding_fn)
+    embedding_fn = recommendation_handler.get_embedding_func(inference='local', model_id=model_id)
+    local_recommendation_json = recommendation_handler.recommend_prompt(prompt, prompt_json, embedding_fn, model_id=model_id, get_xy=True)
     return local_recommendation_json
 
 @app.route("/log", methods=['POST'])
@@ -173,5 +176,5 @@ def demo_inference():
         return response.text, response.status_code
 
 if __name__=='__main__':
-    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
+    debug_mode = os.getenv('FLASK_DEBUG', 'True').lower() in ['true', '1', 't']
     app.run(host='0.0.0.0', port='8080', debug=debug_mode)
