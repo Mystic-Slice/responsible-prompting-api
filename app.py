@@ -69,11 +69,11 @@ def recommend():
     user_ip = request.remote_addr
     hf_token, hf_url = get_credentials.get_credentials()
     api_url, headers = authenticate_api.authenticate_api(hf_token, hf_url)
-    prompt_json = recommendation_handler.populate_json()
+    prompt_json, _ = recommendation_handler.populate_json()
     args = request.args
     prompt = args.get("prompt")
-    recommendation_json = recommendation_handler.recommend_prompt(prompt, prompt_json,
-                                                                  api_url, headers)
+    embedding_fn = recommendation_handler.get_embedding_func(inference='local', model_id='sentence-transformers/all-MiniLM-L6-v2')
+    recommendation_json = recommendation_handler.recommend_prompt(prompt, prompt_json, embedding_fn)
     logger.info(f'USER - {user_ip} - ID {id} - accessed recommend route')
     logger.info(f'RECOMMEND ROUTE - request: {prompt} response: {recommendation_json}')
     return recommendation_json
@@ -96,12 +96,12 @@ def get_thresholds():
 @cross_origin()
 def recommend_local():
     model_id, model_path = save_model.save_model()
-    prompt_json = recommendation_handler.populate_json()
+    prompt_json, _ = recommendation_handler.populate_json()
     args = request.args
     print("args list = ", args)
     prompt = args.get("prompt")
-    local_recommendation_json = recommendation_handler.recommend_local(prompt, prompt_json,
-                                                                       model_id, model_path)
+    embedding_fn = recommendation_handler.get_embedding_func(inference='local', model_id='sentence-transformers/all-MiniLM-L6-v2')
+    local_recommendation_json = recommendation_handler.recommend_local(prompt, prompt_json, embedding_fn)
     return local_recommendation_json
 
 @app.route("/log", methods=['POST'])
