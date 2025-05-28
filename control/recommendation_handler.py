@@ -180,7 +180,7 @@ def sort_by_similarity(e):
 
 def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold = 0.3,
                      add_upper_threshold = 0.5, remove_lower_threshold = 0.1,
-                     remove_upper_threshold = 0.5, model_id = 'sentence-transformers/all-minilm-l6-v2'):
+                     remove_upper_threshold = 0.5, model_id = 'sentence-transformers/all-minilm-l6-v2', get_xy = True):
     """
     Function that recommends prompts additions or removals.
 
@@ -205,20 +205,21 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
     Raises:
         Nothing.
     """
-    if(model_id == 'baai/bge-large-en-v1.5' ):
-        json_file = './prompt-sentences-main/prompt_sentences-bge-large-en-v1.5.json'
-        umap_model_file = './models/umap/intfloat/multilingual-e5-large/umap.pkl'
-    elif(model_id == 'intfloat/multilingual-e5-large'):
-        json_file = './prompt-sentences-main/prompt_sentences-multilingual-e5-large.json'
-        umap_model_file = './models/umap/intfloat/multilingual-e5-large/umap.pkl'
-    else: # fall back to all-minilm as default
-        json_file = './prompt-sentences-main/prompt_sentences-all-minilm-l6-v2.json'
-        umap_model_file = './models/umap/sentence-transformers/all-MiniLM-L6-v2/umap.pkl'
+    if prompt_json is None:
+        if(model_id == 'baai/bge-large-en-v1.5' ):
+            json_file = './prompt-sentences-main/prompt_sentences-bge-large-en-v1.5.json'
+            umap_model_file = './models/umap/intfloat/multilingual-e5-large/umap.pkl'
+        elif(model_id == 'intfloat/multilingual-e5-large'):
+            json_file = './prompt-sentences-main/prompt_sentences-multilingual-e5-large.json'
+            umap_model_file = './models/umap/intfloat/multilingual-e5-large/umap.pkl'
+        else: # fall back to all-minilm as default
+            json_file = './prompt-sentences-main/prompt_sentences-all-minilm-l6-v2.json'
+            umap_model_file = './models/umap/sentence-transformers/all-MiniLM-L6-v2/umap.pkl'
 
-    with open(umap_model_file, 'rb') as f:
-        umap_model = pickle.load(f)
+        with open(umap_model_file, 'rb') as f:
+            umap_model = pickle.load(f)
 
-    prompt_json = json.load( open( json_file ) )
+        prompt_json = json.load( open( json_file ) )
 
     # Output initialization
     out, out['input'], out['add'], out['remove'] = {}, {}, {}, {}
@@ -257,14 +258,15 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
     # Recommendation of values to remove from the current prompt
     for sentence in input_sentences:
         input_embedding = query(sentence, api_url, headers) # remote
-        # Obtaining XY coords for input sentences from a UMAP model
-        if(len(prompt_json['negative_values'][0]['centroid']) == len(input_embedding) and sentence != ''):
-            embeddings_umap = umap_model.transform(np.expand_dims(pd.DataFrame(input_embedding).squeeze(), axis=0))
-            input_items.append({
-                'sentence': sentence,
-                'x': str(embeddings_umap[0][0]),
-                'y': str(embeddings_umap[0][1])
-            })
+        if get_xy:
+            # Obtaining XY coords for input sentences from a parametric UMAP model
+            if(len(prompt_json['negative_values'][0]['centroid']) == len(input_embedding) and sentence != ''):
+                embeddings_umap = umap_model.transform(np.expand_dims(pd.DataFrame(input_embedding).squeeze(), axis=0))
+                input_items.append({
+                    'sentence': sentence,
+                    'x': str(embeddings_umap[0][0]),
+                    'y': str(embeddings_umap[0][1])
+                })
 
         for v in prompt_json['negative_values']:
         # Dealing with values without prompts and makinig sure they have the same dimensions
