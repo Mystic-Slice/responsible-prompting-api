@@ -4,8 +4,7 @@
 # Responsible prompting API
 Responsible Prompting is an [AI Alliance affiliated project](https://thealliance.ai/affiliated-projects/responsible-prompting) providing an LLM-agnostic lightweight prompt recommender that dynamically supports users in crafting prompts that embed social values and avoid harmful prompts.
 
-This Responsible Prompting API is composed of a `Flask server` that hosts the `recommend`, `recommend_local`, `get_thresholds` routes, the `swagger` files and a responsible prompting `demo`.
-You can run the server locally to execute requests and obtain responsible prompting recommendations according to `swagger` description.
+This Responsible Prompting API is composed of a `Flask server` that hosts the `recommend`, `recommend_local`, `get_thresholds` routes, the `swagger` files and a responsible prompting `demo`. There is also an additional endpoint `demo_inference` for text completion using the HuggingFace models for use by the demo website. You can run the server locally to execute requests and obtain responsible prompting recommendations according to `swagger` description.
 
 1. [Getting started](#getting-started)
 2. [Customizing recommendations to your use case](#customizing-recommendations-to-your-use-case)
@@ -40,8 +39,7 @@ HF_TOKEN=<include-token-here>
 8. Test that the server is running by accessing http://127.0.0.1:8080/ in your browser. You should see the message 'Ready!'.
 9. Play with our demo by accessing http://127.0.0.1:8080/static/demo/index.html in your browser.
 
-### Connecting to LLMs hosted on Hugging Face
-The demo website uses an inference endpoint (`demo_inference`) which connects to models hosted on HuggingFace. While its connected to a default model for answer generation, the API takes in the following parameters: `model_id`, `temperature` and `max_tokens` as inputs allowing experimentation with models of your choice.
+The demo uses an inference endpoint (`demo_inference`) which connects to models hosted on HuggingFace. For answer generation, it uses a `Llama-4-Scout-17B-16E-Instruct` model as default, which you can change to another model of your choice. The API takes the `model_id`, `temperature` and `max_tokens` as inputs, allowing for experimentation.
 
 ### Check out the API swagger
 1. Run the server (if it is not already running)
