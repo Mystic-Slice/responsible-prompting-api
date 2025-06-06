@@ -11,7 +11,9 @@
         rel="stylesheet" />
 
     <!-- Carbon CSS (for tabs and tags) -->
-    <link rel="stylesheet" href="https://unpkg.com/carbon-components/css/carbon-components.min.css" />
+    <!-- <link rel="stylesheet" href="https://unpkg.com/carbon-components/css/carbon-components.min.css" /> -->
+
+    <link rel="stylesheet" href="./../styles/carbon-components.min.css" />
 
     <script type="text/javascript" src="./js/d3.v7.min.js"></script>
     <script type="text/javascript" src="./js/jquery-3.7.1.min.js"></script>
@@ -121,7 +123,7 @@
             padding: 0.5rem;
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 0.25rem;
         }
 
         /* ================== Message Bubbles ================== */
@@ -133,6 +135,7 @@
             word-wrap: break-word;
             white-space: pre-wrap;
             position: relative;
+            margin-bottom: 0.5rem;
         }
 
         .message.user {
@@ -151,7 +154,6 @@
         .model-info {
             font-size: 0.85rem;
             color: #525252;
-            margin-bottom: 0.25rem;
             padding: 0.25rem 0.75rem;
             border-radius: 0.5rem;
             background-color: white;
@@ -164,7 +166,7 @@
             display: flex;
             flex-wrap: nowrap;
             gap: 0.5rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
             overflow-x: auto;
             scrollbar-width: none; 
             white-space: nowrap;
@@ -236,7 +238,7 @@
 
 
         /* Send button wrapper */
-        #sendBtn {
+        .btn {
             border: none;
             border-radius: 50%;
             display: flex;
@@ -247,7 +249,7 @@
             background-color: white;
         }
 
-        #sendBtn:disabled {
+        .btn:disabled {
             cursor: not-allowed;
         }
 
@@ -256,8 +258,15 @@
             height: 1.25rem;
         }
 
+        #modelSelect {
+            border: 1px solid #c6c6c6;
+            border-radius: 5px;
+            padding: 0.25rem 0.25rem;
+        }
+
         /* ================== Recommendation Tag Container ================== */
         #recommendation {
+            flex: 1;
             font-size: 0.9rem;
             color: #393939;
             display: flex;
@@ -300,6 +309,8 @@
 </head>
 
 <body>
+
+
     <!-- ===== Header: Title + Carbon Tabs ===== -->
     <div class="header-container">
         <div style="display: flex; flex-direction: row;">
@@ -319,6 +330,9 @@
             </li>
         </ol>
     </div>
+    <!-- <button class="btn bx--btn bx--btn--ghost" style="position: absolute; top: 0; right: 0; margin-top: 0.5rem; margin-right: 0.5rem;">
+        <img class="icon" src="./imgs/settings.svg"/>
+    </button> -->
 
     <div class="tab-content">
         <!-- === Chat View === -->
@@ -328,15 +342,15 @@
             <!-- Input area -->
             <div class="input-area">
                 <div id="userInput">
-                    <div id="userInputDiv" contenteditable="true" placeholder="Enter your prompt">
-                        Act as a professional designer with 20 years of experience creating and testing UX interfaces and landing sites for a variety of IT applications. We are in need of more people and an increased budget to be able to keep up with clients' needs. What kind of evidence should I gather to support my demands to gain more resources?
+                    <div id="userInputDiv" contenteditable="true" placeholder="Enter your prompt">Act as a professional designer with 20 years of experience creating and testing UX interfaces and landing sites for a variety of IT applications. We are in need of more people and an increased budget to be able to keep up with clients' needs. What kind of evidence should I gather to support my demands to gain more resources?
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between;">
+                <div style="display: flex; justify-content: space-between; gap: 1rem;">
                     <div id="recommendation"></div>
+                    <select id="modelSelect"></select>
                     <!-- Send button -->
-                    <button id="sendBtn" disabled>
+                    <button id="sendBtn" class="btn" disabled>
                         <img src="./imgs/send.svg" alt="Send" class="icon"/>
                     </button>
                 </div>
@@ -350,6 +364,36 @@
         </div>
     </div>
 
+    <script>
+        const models = [
+            { id: 'mistralai/Mistral-7B-Instruct-v0.3', name: 'Mistral 7B Instruct v0.3' },
+            { id: 'meta-llama/Llama-4-Scout-17B-16E-Instruct', name: 'Llama 4 Scout' },
+            { id: 'meta-llama/Llama-3.3-70B-Instruct', name: 'Llama 3.3 70B Instruct'}
+        ];
+        function createModelSelect() {
+            const modelSelect = document.getElementById('modelSelect');
+
+            models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model.id;
+                option.textContent = model.name;
+                modelSelect.appendChild(option);
+            });
+        }
+
+        // Call the function when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', createModelSelect);
+
+
+        var modelId = models[0].id;
+        const modelSelect = document.getElementById('modelSelect');
+
+        modelSelect.addEventListener('change', function() {
+            const selectedModel = models.find(model => model.id === this.value);
+            modelId = selectedModel.id;
+        });
+    </script>
+
     <!-- To show the bottom of text in -->
     <script>
         var objDiv = document.getElementById("userInputDiv");
@@ -358,7 +402,73 @@
     </script>
 
     <script>
-        let lastRecommendations = null; // stores latest /recommend response
+        let lastRecommendations = {
+    "add": [
+        {
+            "prompt": "In your response, suggest ways to build capacity and skills within the community, leading to more self-sufficient and empowered individuals and organizations.",
+            "similarity": 0.487290451699556,
+            "value": "participation",
+            "x": "4.2045746",
+            "y": "4.556084"
+        },
+        {
+            "prompt": "Be aware of certain additional rights and resources.",
+            "similarity": 0.48600148220174805,
+            "value": "integrity, compliance, trust, ethics, and dedication",
+            "x": "0.20343661",
+            "y": "2.9393818"
+        },
+        {
+            "prompt": "What are some ways I can support my community's physical, mental, and social well-being?",
+            "similarity": 0.4325763404382019,
+            "value": "community and stakeholders",
+            "x": "4.3929386",
+            "y": "4.210431"
+        },
+        {
+            "prompt": "Provide context and explain the implications of your findings.",
+            "similarity": 0.42661520338764375,
+            "value": "forthright and honesty",
+            "x": "1.7805108",
+            "y": "5.1677527"
+        },
+        {
+            "prompt": "Remove any imbalances of power in your response and instead promote equity and empowerment.",
+            "similarity": 0.42160675728547453,
+            "value": "power",
+            "x": "3.0702622",
+            "y": "3.881941"
+        }
+    ],
+    "input": [
+        {
+            "sentence": "Act as a professional designer with 20 years of experience creating and testing UX interfaces and landing sites for a variety of IT applications.",
+            "x": "1.3805038",
+            "y": "4.075644"
+        },
+        {
+            "sentence": "We are in need of more people and an increased budget to be able to keep up with clients' needs.",
+            "x": "2.6527314",
+            "y": "4.0323396"
+        },
+        {
+            "sentence": "What kind of evidence should I gather to support my demands to gain more resources?",
+            "x": "1.2487673",
+            "y": "-1.141737"
+        }
+    ],
+    "remove": [
+        {
+            "closest_harmful_sentence": "What kind of evidence should I gather to support my demands?",
+            "sentence": "What kind of evidence should I gather to support my demands to gain more resources?",
+            "sentence_index": 2,
+            "similarity": 0.8197474610138158,
+            "value": "misinformation and deception",
+            "x": "-0.40089786",
+            "y": "-4.170451"
+        }
+    ]
+}; // stores latest /recommend response
 
         const width = 600;
         const height = 300;
@@ -369,11 +479,9 @@
         const nodeRadius = 3;
 
         // Create SVG once
-        const svg = d3
+        var svg = d3
             .select("#graph")
-            .append("svg")
-            .attr("viewBox", `0 0 ${width} ${height}`)
-            .attr("style", "max-width: 100%; height: auto; font: 8px sans-serif;");
+            .append("svg");
 
         const tooltip = d3
             .select("body")
@@ -381,23 +489,23 @@
             .attr("class", "tooltip")
             .style("opacity", 0);
 
-        function renderGraph(recommendations) {
+        var graphData = { nodes: [], edges: [] };
+        function generateAndRenderGraph(recommendations, graphId) {
+            svg = d3
+            .select(graphId)
+            .select("svg")
+            .attr("viewBox", `0 0 ${width} ${height}`)
+            .attr("style", "max-width: 100%; height: auto; font: 8px sans-serif;");
             if (!recommendations) {
-                svg.selectAll("*").remove();
-                svg
-                    .append("text")
-                    .attr("x", width / 2)
-                    .attr("y", height / 2)
-                    .attr("text-anchor", "middle")
-                    .attr("fill", "#666")
-                    .text("No recommendation data available");
+                clearGraph();
                 return;
             }
 
             const rec = recommendations;
-            const graphData = { nodes: [], edges: [] };
             let i = 0,
                 j = 0;
+
+            graphData = { nodes: [], edges: [] };
 
             // Input sentences
             if (rec.input && rec.input.length > 0) {
@@ -459,6 +567,28 @@
                 type: e.type,
             }));
 
+            renderGraph(graphData, graphId)
+        }
+
+        function clearGraph() {
+            svg.selectAll("*").remove();
+            svg
+                .append("text")
+                .attr("x", width / 2)
+                .attr("y", height / 2)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#666")
+                .text("No recommendation data available");
+        }
+
+        function renderGraph(graphData, graphId) {
+            svg = d3
+            .select(graphId)
+            .select("svg")
+            .attr("viewBox", `0 0 ${width} ${height}`)
+            .attr("style", "max-width: 100%; height: auto; font: 8px sans-serif;");
+
+            console.log("Svg found: ", svg);
             const { nodes, edges } = graphData;
             if (nodes.length === 0) {
                 svg.selectAll("*").remove();
@@ -641,10 +771,10 @@
         }
 
         // Initially show “no data” message
-        renderGraph(null);
+        generateAndRenderGraph(null, "#graph");
 
         const conversation = []; // stores { role, content, recs? }
-        let currentRecs = [];
+        let currentRecs = []; // stores { recommendation, graphData }
         let debounceId = null;
 
         function appendUserTurn(turn) {
@@ -655,18 +785,28 @@
 
             if (turn.recs && turn.recs.length > 0) {
                 const container = $("<div>").addClass("recs-container");
-                turn.recs.forEach((r) => {
+                turn.recs.forEach((rec, index) => {
+                    let r = rec.recommendation;
+                    console.log(rec)
+                    console.log(r);
                     const item = $("<div>")
                         .addClass("recs-item")
                         .addClass(r.type === "add" ? "add" : "remove")
                         .attr('title', r.sentence)
                         .text((r.type === "add" ? "+ " : "x ") + r.value);
+                    let itemId = `rec-${conversation.length}-${index}`;
+                    item.attr('id', itemId);
+                    item.click(() => toggleGraph(rec.graphData, itemId));
                     container.append(item);
                 });
                 container.css("align-self", "flex-end");
                 $("#chat").append(container);
             }
             $("#chat").scrollTop($("#chat")[0].scrollHeight);
+        }
+
+        function toggleGraph(graphData, itemId) {
+
         }
 
         function appendAssistantTurn(text) {
@@ -678,10 +818,9 @@
         }
 
         $("#userInputDiv").on("input", function () {
-            const txt = $(this).html() || "";
-            const trimmed = txt.trim();
+            const txt = $(this).text().trim() || "";
 
-            if (trimmed.length > 0) {
+            if (txt.length > 0) {
                 $("#sendBtn").removeAttr("disabled");
             } else {
                 $("#sendBtn").attr("disabled", true);
@@ -696,6 +835,7 @@
                     $.getJSON("/recommend?prompt=" + encodeURIComponent(txt), (data) => {
                         $("#recommendation").empty();
                         lastRecommendations = data;
+                        generateAndRenderGraph(lastRecommendations, "#graph");
 
                         if (data.remove && data.remove.length > 0) {
                             const rec = data.remove[0];
@@ -731,7 +871,10 @@
                                     .replace(/ {2,}/g, " ")
                                     .trim();
                                 $("#userInputDiv").text(updated);
-                                currentRecs.push({ type: "remove", value: rec.value, sentence: rec.sentence });
+                                currentRecs.push({
+                                    'recommendation': { type: "remove", value: rec.value, sentence: rec.sentence },
+                                    'graphData': graphData,
+                                });
                                 $("#recommendation").empty();
                                 $("#userInputDiv").trigger("input");
                             });
@@ -766,9 +909,12 @@
                                     $tag.click(() => {
                                         const base =
                                             $("#userInputDiv").data("prevHtml") ||
-                                            $("#userInputDiv").text().trim();
-                                        $("#userInputDiv").text((base + " " + rec.prompt).trim());
-                                        currentRecs.push({ type: "add", value: rec.value, sentence: rec.prompt });
+                                            $("#userInputDiv").html().trim();
+                                        $("#userInputDiv").html((base + " " + rec.prompt).trim());
+                                        currentRecs.push({
+                                            'recommendation': { type: "add", value: rec.value, sentence: rec.prompt },
+                                            'graphData': graphData,
+                                        });
                                         $("#recommendation").empty();
                                         $("#userInputDiv").trigger("input");
                                     });
@@ -791,6 +937,8 @@
                 lastRecommendations = null;
             }
         });
+
+        $("#userInputDiv").trigger('input');
 
         $("#sendBtn").on("click", function () {
             const rawText = $("#userInputDiv").text() || "";
@@ -830,7 +978,7 @@
             fullPrompt += "Assistant: ";
 
             $.ajax({
-                url: "/demo_inference?prompt=" + encodeURIComponent(fullPrompt),
+                url: "/demo_inference?prompt=" + encodeURIComponent(fullPrompt) + "&model_id=" + encodeURIComponent(modelId),
                 dataType: "json",
                 success: function (data) {
                     $("#typing").remove();
@@ -905,7 +1053,7 @@
             $("#tab-chat").removeClass("bx--tabs__nav-item--selected");
             $("#chat-content").hide();
             $("#graph-content").show();
-            renderGraph(lastRecommendations);
+            generateAndRenderGraph(lastRecommendations, "#graph");
         });
     </script>
 </body>
