@@ -49,7 +49,7 @@
         /* ================== Header & Tabs ================== */
         .header-container {
             /* background: #ffffff; */
-            padding-top: 1rem;
+            padding: 1rem 0;
             border-bottom: 1px solid #dddddd;
             box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
         }
@@ -304,13 +304,12 @@
             font-size: inherit;
             font-family: inherit;
             box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 10;
         }
     </style>
 </head>
 
 <body>
-
-
     <!-- ===== Header: Title + Carbon Tabs ===== -->
     <div class="header-container">
         <div style="display: flex; flex-direction: row;">
@@ -321,14 +320,14 @@
                 </p>
             </div>
         </div>
-        <ol class="bx--tabs__nav">
+        <!-- <ol class="bx--tabs__nav">
             <li id="tab-chat" class="bx--tabs__nav-item bx--tabs__nav-item--selected">
                 Chat
             </li>
             <li id="tab-graph" class="bx--tabs__nav-item">
                 Graph
             </li>
-        </ol>
+        </ol> -->
     </div>
     <!-- <button class="btn bx--btn bx--btn--ghost" style="position: absolute; top: 0; right: 0; margin-top: 0.5rem; margin-right: 0.5rem;">
         <img class="icon" src="./imgs/settings.svg"/>
@@ -358,17 +357,16 @@
             <!-- Under the input row: recommendation tags -->
         </div>
 
-        <!-- === Graph View === -->
+        <!-- === Graph View ===
         <div id="graph-content">
             <div id="graph"></div>
-        </div>
+        </div> -->
     </div>
 
     <script>
         const models = [
             { id: 'mistralai/Mistral-7B-Instruct-v0.3', name: 'Mistral 7B Instruct v0.3' },
             { id: 'meta-llama/Llama-4-Scout-17B-16E-Instruct', name: 'Llama 4 Scout' },
-            { id: 'meta-llama/Llama-3.3-70B-Instruct', name: 'Llama 3.3 70B Instruct'}
         ];
         function createModelSelect() {
             const modelSelect = document.getElementById('modelSelect');
@@ -402,74 +400,7 @@
     </script>
 
     <script>
-        let lastRecommendations = {
-    "add": [
-        {
-            "prompt": "In your response, suggest ways to build capacity and skills within the community, leading to more self-sufficient and empowered individuals and organizations.",
-            "similarity": 0.487290451699556,
-            "value": "participation",
-            "x": "4.2045746",
-            "y": "4.556084"
-        },
-        {
-            "prompt": "Be aware of certain additional rights and resources.",
-            "similarity": 0.48600148220174805,
-            "value": "integrity, compliance, trust, ethics, and dedication",
-            "x": "0.20343661",
-            "y": "2.9393818"
-        },
-        {
-            "prompt": "What are some ways I can support my community's physical, mental, and social well-being?",
-            "similarity": 0.4325763404382019,
-            "value": "community and stakeholders",
-            "x": "4.3929386",
-            "y": "4.210431"
-        },
-        {
-            "prompt": "Provide context and explain the implications of your findings.",
-            "similarity": 0.42661520338764375,
-            "value": "forthright and honesty",
-            "x": "1.7805108",
-            "y": "5.1677527"
-        },
-        {
-            "prompt": "Remove any imbalances of power in your response and instead promote equity and empowerment.",
-            "similarity": 0.42160675728547453,
-            "value": "power",
-            "x": "3.0702622",
-            "y": "3.881941"
-        }
-    ],
-    "input": [
-        {
-            "sentence": "Act as a professional designer with 20 years of experience creating and testing UX interfaces and landing sites for a variety of IT applications.",
-            "x": "1.3805038",
-            "y": "4.075644"
-        },
-        {
-            "sentence": "We are in need of more people and an increased budget to be able to keep up with clients' needs.",
-            "x": "2.6527314",
-            "y": "4.0323396"
-        },
-        {
-            "sentence": "What kind of evidence should I gather to support my demands to gain more resources?",
-            "x": "1.2487673",
-            "y": "-1.141737"
-        }
-    ],
-    "remove": [
-        {
-            "closest_harmful_sentence": "What kind of evidence should I gather to support my demands?",
-            "sentence": "What kind of evidence should I gather to support my demands to gain more resources?",
-            "sentence_index": 2,
-            "similarity": 0.8197474610138158,
-            "value": "misinformation and deception",
-            "x": "-0.40089786",
-            "y": "-4.170451"
-        }
-    ]
-}; // stores latest /recommend response
-
+        let lastRecommendations = [];
         const width = 600;
         const height = 300;
         const marginTop = 30;
@@ -481,7 +412,8 @@
         // Create SVG once
         var svg = d3
             .select("#graph")
-            .append("svg");
+            .append("svg")
+            .attr('id', 'svgMain');
 
         const tooltip = d3
             .select("body")
@@ -490,10 +422,9 @@
             .style("opacity", 0);
 
         var graphData = { nodes: [], edges: [] };
-        function generateAndRenderGraph(recommendations, graphId) {
+        function generateAndRenderGraph(recommendations, svgId) {
             svg = d3
-            .select(graphId)
-            .select("svg")
+            .select(svgId)
             .attr("viewBox", `0 0 ${width} ${height}`)
             .attr("style", "max-width: 100%; height: auto; font: 8px sans-serif;");
             if (!recommendations) {
@@ -567,7 +498,7 @@
                 type: e.type,
             }));
 
-            renderGraph(graphData, graphId)
+            renderGraph(graphData, svgId)
         }
 
         function clearGraph() {
@@ -581,15 +512,14 @@
                 .text("No recommendation data available");
         }
 
-        function renderGraph(graphData, graphId) {
+        function renderGraph(graphData, svgId) {
             svg = d3
-            .select(graphId)
-            .select("svg")
+            .select(svgId)
             .attr("viewBox", `0 0 ${width} ${height}`)
             .attr("style", "max-width: 100%; height: auto; font: 8px sans-serif;");
 
-            console.log("Svg found: ", svg);
-            const { nodes, edges } = graphData;
+            let { nodes, edges } = graphData;
+
             if (nodes.length === 0) {
                 svg.selectAll("*").remove();
                 svg
@@ -771,7 +701,7 @@
         }
 
         // Initially show “no data” message
-        generateAndRenderGraph(null, "#graph");
+        generateAndRenderGraph(null, "#svgMain");
 
         const conversation = []; // stores { role, content, recs? }
         let currentRecs = []; // stores { recommendation, graphData }
@@ -787,8 +717,6 @@
                 const container = $("<div>").addClass("recs-container");
                 turn.recs.forEach((rec, index) => {
                     let r = rec.recommendation;
-                    console.log(rec)
-                    console.log(r);
                     const item = $("<div>")
                         .addClass("recs-item")
                         .addClass(r.type === "add" ? "add" : "remove")
@@ -805,8 +733,48 @@
             $("#chat").scrollTop($("#chat")[0].scrollHeight);
         }
 
-        function toggleGraph(graphData, itemId) {
+        let popupOpen = false;
+        function toggleGraph(data, itemId) {
+            const existing = document.getElementById('popup');
+            if (existing) {
+                existing.remove();
+                popupOpen = false;
+                return;
+            }
+            const tag = document.getElementById(itemId);
+            const rect = tag.getBoundingClientRect();
+            const popup = document.createElement('div');
+            popup.id = 'popup';
+            // reuse your .tooltip styles but allow pointer events
+            popup.className = 'tooltip';
+            popup.style.pointerEvents = 'auto';
+            popup.style.width = '600px';
+            popup.style.height = '315px';
+            popup.style.zIndex = 2;
+            popup.style.left = `${rect.left + window.scrollX}px`;
+            popup.style.top  = `${rect.top + window.scrollY + 25}px`;
 
+            const container = document.createElement('svg');
+            container.style.width = '100%';
+            container.style.height = '100%';
+
+            container.innerHTML = "<svg id='popup-graph'></svg>"
+            popup.appendChild(container);
+            document.body.appendChild(popup);
+
+            renderGraph(data, '#popup-graph');
+            // close on outside click
+            const onClickOutside = (e) => {
+            if (!popup.contains(e.target) && e.target !== tag) {
+                popup.remove();
+                document.removeEventListener('click', onClickOutside);
+                popupOpen = false;
+            }
+            };
+            setTimeout(() => {
+                document.addEventListener('click', onClickOutside);
+            }, 0);
+            popupOpen = true;
         }
 
         function appendAssistantTurn(text) {
@@ -835,7 +803,7 @@
                     $.getJSON("/recommend?prompt=" + encodeURIComponent(txt), (data) => {
                         $("#recommendation").empty();
                         lastRecommendations = data;
-                        generateAndRenderGraph(lastRecommendations, "#graph");
+                        generateAndRenderGraph(lastRecommendations, "#svgMain");
 
                         if (data.remove && data.remove.length > 0) {
                             const rec = data.remove[0];
@@ -899,6 +867,7 @@
                                             const cur = $("#userInputDiv").html();
                                             $("#userInputDiv").data("prevHtml", cur);
                                             $("#userInputDiv").html($("#userInputDiv").html() + " <span style='color: green'>" + rec.prompt.trim() + "</span>")
+                                            $("#userInputDiv").scrollTop($("#userInputDiv")[0].scrollHeight);
                                         },
                                         () => {
                                             const prev = $("#userInputDiv").data("prevHtml") || txt;
@@ -1007,8 +976,8 @@
                             const cur = $("#assistantBubble").text();
                             $("#assistantBubble").text(cur + chars[idx]);
                             idx++;
-                            $("#chat").scrollTop($("#chat")[0].scrollHeight);
-                            setTimeout(typeNext, 10);
+                            // $("#chat").scrollTop($("#chat")[0].scrollHeight);
+                            setTimeout(typeNext, 0);
                         } else {
                             $("#assistantBubble").removeAttr("id");
                             conversation.push({
@@ -1053,7 +1022,7 @@
             $("#tab-chat").removeClass("bx--tabs__nav-item--selected");
             $("#chat-content").hide();
             $("#graph-content").show();
-            generateAndRenderGraph(lastRecommendations, "#graph");
+            generateAndRenderGraph(lastRecommendations, "#svgMain");
         });
     </script>
 </body>
