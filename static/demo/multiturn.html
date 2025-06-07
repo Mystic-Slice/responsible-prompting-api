@@ -11,8 +11,6 @@
         rel="stylesheet" />
 
     <!-- Carbon CSS (for tabs and tags) -->
-    <!-- <link rel="stylesheet" href="https://unpkg.com/carbon-components/css/carbon-components.min.css" /> -->
-
     <link rel="stylesheet" href="./../styles/carbon-components.min.css" />
 
     <script type="text/javascript" src="./js/d3.v7.min.js"></script>
@@ -170,6 +168,7 @@
             overflow-x: auto;
             scrollbar-width: none; 
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .recs-item {
@@ -177,6 +176,7 @@
             padding: 0.25rem 0.5rem;
             border-radius: 0.25rem;
             color: #ffffff;
+            flex-shrink: 0;
         }
 
         .recs-item.add {
@@ -754,6 +754,15 @@
             popup.style.left = `${rect.left + window.scrollX}px`;
             popup.style.top  = `${rect.top + window.scrollY + 25}px`;
 
+            // When the popup is open when the chat is being scrolled,
+            // it leads to a lot of weird behaviour
+            // so, for now, the popup is force closed when the chat is scrolling
+            document.getElementById("chat").addEventListener("scroll", () => {
+                popup.remove();
+                popupOpen = false;
+                return;
+            })
+
             const container = document.createElement('svg');
             container.style.width = '100%';
             container.style.height = '100%';
@@ -797,10 +806,13 @@
 
             clearTimeout(debounceId);
 
+            let stopRecos = false;
+
             if (txt.length > 0 && /[.?!]$/.test(txt)) {
                 debounceId = setTimeout(() => {
                     $("#recommendation").html("Checking recommendations…");
                     $.getJSON("/recommend?prompt=" + encodeURIComponent(txt), (data) => {
+                        if (stopRecos) return;
                         $("#recommendation").empty();
                         lastRecommendations = data;
                         generateAndRenderGraph(lastRecommendations, "#svgMain");
@@ -901,6 +913,9 @@
                         }
                     });
                 }, 500);
+                $("#sendBtn").on("click", function () {
+                    stopRecos = true;
+                })
             } else {
                 $("#recommendation").empty();
                 lastRecommendations = null;
@@ -971,14 +986,17 @@
 
                     const chars = generated.split("");
                     let idx = 0;
+                    const chatEl = $("#chat")[0];
+                    const wasAtBottom = chatEl.scrollHeight - chatEl.scrollTop <= chatEl.clientHeight + 5;
                     function typeNext() {
                         if (idx < chars.length) {
                             const cur = $("#assistantBubble").text();
                             $("#assistantBubble").text(cur + chars[idx]);
                             idx++;
-                            // $("#chat").scrollTop($("#chat")[0].scrollHeight);
+                            if(wasAtBottom) $("#chat").scrollTop($("#chat")[0].scrollHeight);
                             setTimeout(typeNext, 0);
                         } else {
+                            if(wasAtBottom) $("#chat").scrollTop($("#chat")[0].scrollHeight);
                             $("#assistantBubble").removeAttr("id");
                             conversation.push({
                                 role: "assistant",
