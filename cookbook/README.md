@@ -8,7 +8,8 @@ The following notebooks exemplify workflow steps, features, and possible uses of
 2. [Visualize Embeddings](./visualize_embeddings.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IBM/responsible-prompting-api/blob/develop/cookbook/visualize_embeddings.ipynb)
 3. [Populate Embeddings](./populate_embeddings.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IBM/responsible-prompting-api/blob/develop/cookbook/populate_embeddings.ipynb)
 4. [Recommend Thresholds](./recommend_thresholds.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IBM/responsible-prompting-api/blob/develop/cookbook/recommend_thresholds.ipynb)
-5. [Populate Coordinates](./populate_coordinates.ipynb)
+5. [Populate Coordinates](./populate_coordinates.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IBM/responsible-prompting-api/blob/develop/cookbook/populate_coordinates.ipynb)
+6. [Use as an API](./responsible_prompting_granite_embeddings.ipynb)[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IBM/responsible-prompting-api/blob/develop/cookbook/responsible_prompting_granite_embeddings.ipynb)
 
 ## Evaluation
 
