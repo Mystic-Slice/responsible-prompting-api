@@ -106,6 +106,7 @@ a {
     border-radius: 0.25rem;
     color: #ffffff;
     flex-shrink: 0;
+    cursor: default;
 }
 
 .recs-item.add {
