@@ -283,7 +283,6 @@ function appendUserTurn(turn, chatId) {
                 .text((r.type === "add" ? "+ " : "x ") + r.value);
             let itemId = `rec-${conversation.length}-${index}`;
             item.attr('id', itemId);
-            item.click(() => toggleGraph(rec.graphData, itemId, chatId));
             container.append(item);
         });
         container.css("align-self", "flex-end");
@@ -301,10 +300,15 @@ function appendAssistantTurn(text, chatId, bubbleId) {
     $(chatId).scrollTop($(chatId)[0].scrollHeight);
 }
 
-function generateResponse(rawText, chatId) {
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function generateResponse(rawText, chatId, sendBtnId) {
     const userText = rawText.trim();
     if (!userText) return;
 
+    generating = true;
     const thisTurn = {
         role: "user",
         content: userText,
@@ -337,7 +341,7 @@ function generateResponse(rawText, chatId) {
     $.ajax({
         url: "/demo_inference?prompt=" + encodeURIComponent(fullPrompt) + "&model_id=" + encodeURIComponent(modelId),
         dataType: "json",
-        success: function (data) {
+        success: async function (data) {
             $("#typing").remove();
             const generated = data.content.trim();
             const modelId = data.model_id;
@@ -354,24 +358,27 @@ function generateResponse(rawText, chatId) {
             const chars = generated.split("");
             let idx = 0;
             const chatEl = $(chatId)[0];
-            const wasAtBottom = chatEl.scrollHeight - chatEl.scrollTop <= chatEl.clientHeight + 5;
-            function typeNext() {
-                if (idx < chars.length) {
-                    const cur = $("#assistantBubble").text();
-                    $("#assistantBubble").text(cur + chars[idx]);
-                    idx++;
-                    if(wasAtBottom) $(chatId).scrollTop($(chatId)[0].scrollHeight);
-                    setTimeout(typeNext, 0);
-                } else {
-                    if(wasAtBottom) $(chatId).scrollTop($(chatId)[0].scrollHeight);
-                    $("#assistantBubble").removeAttr("id");
-                    conversation.push({
-                        role: "assistant",
-                        content: generated,
-                    });
+            var keepScrollDown = true;
+            while (idx < chars.length) {
+                if (chatEl.scrollHeight != chatEl.scrollTop + chatEl.clientHeight) {
+                    keepScrollDown = false;
+                    console.log("user scroll detected");
                 }
-            }
-            typeNext();
+                const cur = $("#assistantBubble").text();
+                $("#assistantBubble").text(cur + chars[idx]);
+                idx++;
+                if(keepScrollDown) $(chatId).scrollTop($(chatId)[0].scrollHeight);
+                
+                await delay(0);
+            } 
+            if(keepScrollDown) $(chatId).scrollTop($(chatId)[0].scrollHeight);
+            $("#assistantBubble").removeAttr("id");
+            conversation.push({
+                role: "assistant",
+                content: generated,
+            });
+            generating = false;
+            if($("#userInputDiv").text().length > 0) $(sendBtnId).attr("disabled", false);
         },
         error: function (xhr) {
             $("#typing").remove();
@@ -379,6 +386,7 @@ function generateResponse(rawText, chatId) {
                 xhr.responseJSON?.error?.message ||
                 "Unknown error from inference.";
             appendAssistantTurn(`Error: ${err}`, chatId, "assistantBubble");
+            generating = false;
         },
     });
 }
@@ -401,17 +409,8 @@ function toggleGraph(data, itemId, chatId) {
     popup.style.width = '600px';
     popup.style.height = '315px';
     popup.style.zIndex = 2;
-    popup.style.left = `${rect.left + window.scrollX}px`;
-    popup.style.top  = `${rect.top + window.scrollY + 25}px`;
-
-    // When the popup is open when the chat is being scrolled,
-    // it leads to a lot of weird behaviour
-    // so, for now, the popup is force closed when the chat is scrolling
-    $(chatId).on("scroll", () => {
-        popup.remove();
-        popupOpen = false;
-        return;
-    })
+    popup.style.left = `${rect.left + window.scrollX - 283}px`;
+    popup.style.top  = `${rect.top + window.scrollY - rect.height - 300}px`;
 
     const container = document.createElement('svg');
     container.style.width = '100%';
@@ -424,11 +423,11 @@ function toggleGraph(data, itemId, chatId) {
     renderGraph(data, '#popup-graph', "#tooltip");
     // close on outside click
     const onClickOutside = (e) => {
-    if (!popup.contains(e.target) && e.target !== tag) {
-        popup.remove();
-        document.removeEventListener('click', onClickOutside);
-        popupOpen = false;
-    }
+        if (!popup.contains(e.target) && e.target !== tag) {
+            popup.remove();
+            document.removeEventListener('click', onClickOutside);
+            popupOpen = false;
+        }
     };
     setTimeout(() => {
         document.addEventListener('click', onClickOutside);
@@ -443,20 +442,16 @@ let debounceId = null;
 function generateRecommendations(sendBtnId, promptInputId, recommendationDivId) {
     const txt = $(promptInputId).text().trim() || "";
 
-    if (txt.length > 0) {
-        $(sendBtnId).removeAttr("disabled");
-    } else {
-        $(sendBtnId).attr("disabled", true);
-        $(recommendationDivId).empty();
-    }
-
     clearTimeout(debounceId);
 
     let stopRecos = false;
 
     if (txt.length > 0 && /[.?!]$/.test(txt)) {
         debounceId = setTimeout(() => {
-            $(recommendationDivId).html("Checking recommendations…");
+            $(recommendationDivId).html(`
+                <div class="bx--tag rec-tags-inputarea rec-tags-inputarea-loading">
+                </div>
+            `);
             $.getJSON("/recommend?prompt=" + encodeURIComponent(txt), (data) => {
                 if (stopRecos) return;
                 $(recommendationDivId).empty();
@@ -556,6 +551,14 @@ function generateRecommendations(sendBtnId, promptInputId, recommendationDivId) 
                     (!data.remove || data.remove.length === 0)
                 ) {
                     $(recommendationDivId).text("No recommendations found.");
+                } else {
+                    const graphBtn = $(`
+                        <button id="graphBtn" class="btn">
+                            <img src="./imgs/data-vis.svg" alt="Graph" class="icon" height="2rem"/>
+                        </button>
+                    `);
+                    graphBtn.on('click', () => toggleGraph(graphData, "graphBtn", 'afas'));
+                    $(recommendationDivId).append(graphBtn);
                 }
             });
         }, 500);

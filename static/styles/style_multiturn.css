@@ -30,7 +30,6 @@ a {
     /* background: #ffffff; */
     padding: 1rem 0;
     border-bottom: 1px solid #dddddd;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* ================== Chat vs. Graph ================== */
@@ -93,13 +92,12 @@ a {
 .recs-container {
     max-width: 70%;
     display: flex;
-    flex-wrap: nowrap;
     gap: 0.5rem;
     margin-bottom: 1rem;
-    overflow-x: auto;
-    scrollbar-width: none; 
-    white-space: nowrap;
+    scrollbar-width: none;
     flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: end;
 }
 
 .recs-item {
@@ -142,38 +140,36 @@ a {
 }
 
 /* Contenteditable box wrapper */
-#userInput {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-/* The editable area itself */
-#userInput>div[contenteditable] {
+#userInputDiv {
     min-height: 2.5rem;
     font-size: 1rem;
     line-height: 1.5;
     font-family: inherit;
     resize: none;
     background-color: #ffffff;
-}
-
-[contenteditable]:focus {
-    outline: 0px solid transparent;
-}
-
-div[contenteditable] {
+    width: 100%;
     height: 10vh;
     overflow: scroll;
 }
 
+[contenteditable]:focus {
+    outline: 0px;
+}
+
+[contenteditable]:empty:before {
+    content: attr(placeholder);
+    pointer-events: none;
+    display: block;
+    color: gray;
+}
 
 /* Send button wrapper */
 .btn {
     border: none;
     border-radius: 50%;
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    vertical-align: middle;
     justify-content: center;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -193,6 +189,9 @@ div[contenteditable] {
     border: 1px solid #c6c6c6;
     border-radius: 5px;
     padding: 0.25rem 0.25rem;
+    height: 4vh;
+    width: fit-content;
+    margin-left: 1rem;
 }
 
 /* ================== Recommendation Tag Container ================== */
@@ -200,18 +199,30 @@ div[contenteditable] {
     flex: 1;
     font-size: 0.9rem;
     color: #393939;
-    display: flex;
     gap: 0.5rem;
     min-height: 1.5rem;
-    overflow-x: scroll;
-    scrollbar-width: none; 
-    white-space: nowrap;
     align-items: center;
 }
 
 .rec-tags-inputarea {
     flex: 0 0 auto;
 }
+@keyframes pulse {
+  0%, 100% {
+    background: linear-gradient(to left, darkgray 50%, lightgray 50%) right;
+    background-size: 200%;
+    transition: .5s ease-out;
+  }
+  50% {
+    background-position: left;
+  }
+}
+
+.rec-tags-inputarea-loading {
+    width: 5rem;
+    animation: pulse 2s infinite;
+}
+
 
 .tooltip {
     position: absolute;
@@ -228,4 +239,21 @@ div[contenteditable] {
     font-family: inherit;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 10;
+}
+
+#learn-more-container {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 1.5rem;
+    color: #0f62fe;
+    display: flex
+}
+
+#learn-more-text {
+    width: 150px;
+}
+
+#learn-more-container:hover #learn-more-text {
+    text-decoration: underline;
 }
