@@ -257,3 +257,13 @@ a {
 #learn-more-container:hover #learn-more-text {
     text-decoration: underline;
 }
+
+/* To make list numbering in markdown work properly */
+ol li {
+    list-style: decimal;
+    list-style-position: inside;
+}
+
+ul li p, ol li p {
+   display: inline;
+}

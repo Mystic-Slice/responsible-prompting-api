@@ -269,7 +269,7 @@ function generateGraph(recommendations) {
 function appendUserTurn(turn, chatId) {
     const bubble = $("<div>")
         .addClass("message user")
-        .text(turn.content);
+        .html(marked.parse(turn.content));
     $(chatId).append(bubble);
 
     if (turn.recs && turn.recs.length > 0) {
@@ -359,13 +359,13 @@ function generateResponse(rawText, chatId, sendBtnId) {
             let idx = 0;
             const chatEl = $(chatId)[0];
             var keepScrollDown = true;
+            var cur = '';
             while (idx < chars.length) {
                 if (chatEl.scrollHeight != chatEl.scrollTop + chatEl.clientHeight) {
                     keepScrollDown = false;
-                    console.log("user scroll detected");
                 }
-                const cur = $("#assistantBubble").text();
-                $("#assistantBubble").text(cur + chars[idx]);
+                cur += chars[idx];
+                $("#assistantBubble").html(marked.parse(cur));
                 idx++;
                 if(keepScrollDown) $(chatId).scrollTop($(chatId)[0].scrollHeight);
                 
