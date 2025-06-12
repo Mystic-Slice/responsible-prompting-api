@@ -279,8 +279,8 @@ function appendUserTurn(turn, chatId) {
             const item = $("<div>")
                 .addClass("recs-item")
                 .addClass(r.type === "add" ? "add" : "remove")
-                .attr('title', r.sentence)
-                .text((r.type === "add" ? "+ " : "x ") + r.value);
+                .attr('title', r.value + ": \n" + r.sentence)
+                .text((r.type === "add" ? "+ " : "x ") + (r.value.length <= 10 ? r.value : r.value.substring(0, 10) + " ..."));
             let itemId = `rec-${conversation.length}-${index}`;
             item.attr('id', itemId);
             container.append(item);
