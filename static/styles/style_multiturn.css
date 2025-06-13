@@ -192,7 +192,7 @@ a {
     padding: 0.25rem 0.25rem;
     height: 4vh;
     width: fit-content;
-    margin-left: 1rem;
+    margin-left: 0.5rem;
 }
 
 /* ================== Recommendation Tag Container ================== */
@@ -267,4 +267,10 @@ ol li {
 
 ul li p, ol li p {
    display: inline;
+}
+
+.rec-span {
+    border-radius: 0.5rem;
+    color: white;
+    padding: 0 0.25rem;
 }

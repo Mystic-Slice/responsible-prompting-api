@@ -279,8 +279,8 @@ function appendUserTurn(turn, chatId) {
             const item = $("<div>")
                 .addClass("recs-item")
                 .addClass(r.type === "add" ? "add" : "remove")
-                .attr('title', r.value + ": \n" + r.sentence)
-                .text((r.type === "add" ? "+ " : "x ") + (r.value.length <= 10 ? r.value : r.value.substring(0, 10) + " ..."));
+                .attr('title', r.sentence)
+                .text((r.type === "add" ? "+ " : "x ") + r.value);
             let itemId = `rec-${conversation.length}-${index}`;
             item.attr('id', itemId);
             container.append(item);
@@ -406,11 +406,11 @@ function toggleGraph(data, itemId, chatId) {
     // reuse .tooltip styles but allow pointer events
     popup.className = 'tooltip';
     popup.style.pointerEvents = 'auto';
-    popup.style.width = '600px';
-    popup.style.height = '315px';
+    popup.style.width = '800px';
+    popup.style.height = '420px';
     popup.style.zIndex = 2;
-    popup.style.left = `${rect.left + window.scrollX - 283}px`;
-    popup.style.top  = `${rect.top + window.scrollY - rect.height - 300}px`;
+    popup.style.left = `${rect.left + window.scrollX - 17}px`;
+    popup.style.top  = `${rect.top + window.scrollY - rect.height - 410}px`;
 
     const container = document.createElement('svg');
     container.style.width = '100%';
@@ -458,6 +458,21 @@ function generateRecommendations(sendBtnId, promptInputId, recommendationDivId) 
                 lastRecommendations = data;
                 graphData = generateGraph(lastRecommendations);
 
+                if (
+                    (!data.add || data.add.length === 0) &&
+                    (!data.remove || data.remove.length === 0)
+                ) {
+                    $(recommendationDivId).text("No recommendations found.");
+                } else {
+                    const graphBtn = $(`
+                        <button id="graphBtn" class="btn" title="View sentences in the embedding space">
+                            <img src="./imgs/data-vis.svg" alt="Graph" class="icon" height="2rem"/>
+                        </button>
+                    `);
+                    graphBtn.on('click', () => toggleGraph(graphData, "graphBtn", 'afas'));
+                    $(recommendationDivId).append(graphBtn);
+                }
+
                 if (data.remove && data.remove.length > 0) {
                     const rec = data.remove[0];
                     const sentence = rec.sentence.replaceAll("'", "\\'");
@@ -475,7 +490,7 @@ function generateRecommendations(sendBtnId, promptInputId, recommendationDivId) 
                             $(promptInputId).html(
                                 $(promptInputId).html().replace(
                                     rec.sentence.trim(),
-                                    " <span style='color: red; text-decoration: line-through'>" + rec.sentence.trim() + "</span>"
+                                    " <span class='rec-span' style='text-decoration: line-through; background-color: lightcoral;'>" + rec.sentence.trim() + "</span>"
                                 )
                             )
                         },
@@ -519,7 +534,7 @@ function generateRecommendations(sendBtnId, promptInputId, recommendationDivId) 
                                 () => {
                                     const cur = $(promptInputId).html();
                                     $(promptInputId).data("prevHtml", cur);
-                                    $(promptInputId).html($(promptInputId).html() + " <span style='color: green'>" + rec.prompt.trim() + "</span>")
+                                    $(promptInputId).html($(promptInputId).html() + " <span class='rec-span' style='background-color: green;'>" + rec.prompt.trim() + "</span>")
                                     $(promptInputId).scrollTop($(promptInputId)[0].scrollHeight);
                                 },
                                 () => {
@@ -544,21 +559,6 @@ function generateRecommendations(sendBtnId, promptInputId, recommendationDivId) 
                             $(recommendationDivId).append($tag);
                         }
                     });
-                }
-
-                if (
-                    (!data.add || data.add.length === 0) &&
-                    (!data.remove || data.remove.length === 0)
-                ) {
-                    $(recommendationDivId).text("No recommendations found.");
-                } else {
-                    const graphBtn = $(`
-                        <button id="graphBtn" class="btn">
-                            <img src="./imgs/data-vis.svg" alt="Graph" class="icon" height="2rem"/>
-                        </button>
-                    `);
-                    graphBtn.on('click', () => toggleGraph(graphData, "graphBtn", 'afas'));
-                    $(recommendationDivId).append(graphBtn);
                 }
             });
         }, 500);
