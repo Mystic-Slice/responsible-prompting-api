@@ -1,0 +1,276 @@
+/* ================== Global ================== */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    /* background-color: #f4f4f4; */
+    font-family: "IBM Plex Sans", sans-serif;
+    color: #161616;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* center within a max width */
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    box-sizing: border-box;
+}
+
+a {
+    color: #0f62fe;
+    text-decoration: none;
+}
+
+/* ================== Header & Tabs ================== */
+.header-container {
+    /* background: #ffffff; */
+    padding: 1rem 0;
+    border-bottom: 1px solid #dddddd;
+}
+
+/* ================== Chat vs. Graph ================== */
+#chat-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    background: #ffffff;
+    border-radius: 8px;
+    box-sizing: border-box;
+    min-height: 0;
+}
+
+/* ================== Chat Container ================== */
+.chat-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+/* ================== Message Bubbles ================== */
+.message {
+    max-width: 70%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
+.message.user {
+    background-color: #f2f4f8;
+    align-self: flex-end;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.message.assistant {
+    background-color: white;
+    align-self: flex-start;
+    padding-left: 2.5rem;
+}
+
+/* ================== Model Info Bar ================== */
+.model-info {
+    font-size: 0.85rem;
+    color: #525252;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    background-color: white;
+    align-self: flex-start;
+}
+
+/* ================== Recommendations Tags ================== */
+.recs-container {
+    max-width: 70%;
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    scrollbar-width: none;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: end;
+}
+
+.recs-item {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    color: #ffffff;
+    flex-shrink: 0;
+    cursor: default;
+}
+
+.recs-item.add {
+    background-color: #24a148;
+}
+
+.recs-item.remove {
+    background-color: #da1e28;
+}
+
+/* ================== Input Area ================== */
+.input-area {
+    border-top: 1px solid #dddddd;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05);
+    gap: 0.5rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    border: 1px solid #c6c6c6;
+    border-radius: 0.5rem;
+}
+
+.input-area:focus-within {
+    outline: none;
+    border-color: #0f62fe;
+    box-shadow: 0px 0px 0px 2px rgba(15, 98, 254, 0.2);
+}
+
+/* Contenteditable box wrapper */
+#userInputDiv {
+    min-height: 2.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-family: inherit;
+    resize: none;
+    background-color: #ffffff;
+    width: 100%;
+    height: 10vh;
+    overflow: scroll;
+}
+
+[contenteditable]:focus {
+    outline: 0px;
+}
+
+[contenteditable]:empty:before {
+    content: attr(placeholder);
+    pointer-events: none;
+    display: block;
+    color: gray;
+}
+
+/* Send button wrapper */
+.btn {
+    border: none;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: white;
+}
+
+.btn:disabled {
+    cursor: not-allowed;
+}
+
+.icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+#modelSelect {
+    border: 1px solid #c6c6c6;
+    border-radius: 5px;
+    padding: 0.25rem 0.25rem;
+    height: 4vh;
+    width: fit-content;
+    margin-left: 0.5rem;
+}
+
+/* ================== Recommendation Tag Container ================== */
+#recommendation {
+    flex: 1;
+    font-size: 0.9rem;
+    color: #393939;
+    gap: 0.5rem;
+    min-height: 1.5rem;
+    align-items: center;
+}
+
+.rec-tags-inputarea {
+    flex: 0 0 auto;
+}
+@keyframes pulse {
+  0%, 100% {
+    background: linear-gradient(to left, darkgray 50%, lightgray 50%) right;
+    background-size: 200%;
+    transition: .5s ease-out;
+  }
+  50% {
+    background-position: left;
+  }
+}
+
+.rec-tags-inputarea-loading {
+    width: 5rem;
+    animation: pulse 2s infinite;
+}
+
+
+.tooltip {
+    position: absolute;
+    text-align: left;
+    padding: 0.5em;
+    width: 20em;
+    min-height: 5em;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    pointer-events: none;
+    font-size: inherit;
+    font-family: inherit;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+#learn-more-container {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 1.5rem;
+    color: #0f62fe;
+    display: flex
+}
+
+#learn-more-text {
+    width: 150px;
+}
+
+#learn-more-container:hover #learn-more-text {
+    text-decoration: underline;
+}
+
+/* To make list numbering in markdown work properly */
+ol li {
+    list-style: decimal;
+    list-style-position: inside;
+}
+
+ul li p, ol li p {
+   display: inline;
+}
+
+.rec-span {
+    border-radius: 0.5rem;
+    color: white;
+    padding: 0 0.25rem;
+}
