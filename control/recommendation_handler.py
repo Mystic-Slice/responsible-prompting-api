@@ -29,15 +29,11 @@ import requests
 import json
 import math
 import re
-import warnings
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import os
-#os.environ['TRANSFORMERS_CACHE'] ="./models/allmini/cache"
-import os.path
 from sentence_transformers import SentenceTransformer
-import pickle
 
 def populate_json(json_file_path = './prompt-sentences-main/prompt_sentences-all-minilm-l6-v2.json',
                     existing_json_populated_file_path = './prompt-sentences-main/prompt_sentences-all-minilm-l6-v2.json'):
@@ -61,15 +57,8 @@ def populate_json(json_file_path = './prompt-sentences-main/prompt_sentences-all
     json_file = json_file_path
     if(os.path.isfile(existing_json_populated_file_path)):
         json_file = existing_json_populated_file_path
-    try:
-        prompt_json = json.load(open(json_file))
-        json_error = None
-        return prompt_json, json_error
-    except Exception as e:
-        json_error = e
-        print(f'Error when loading sentences json file: {json_error}')
-        prompt_json = None
-        return prompt_json, json_error
+    prompt_json = json.load(open(json_file))
+    return prompt_json
 
 def get_embedding_func(inference = 'huggingface', **kwargs):
     if inference == 'local':
@@ -150,17 +139,24 @@ def sort_by_similarity(e):
     """
     return e['similarity']
 
-def recommend_prompt(prompt, prompt_json, embedding_fn = None, add_lower_threshold = 0.3,
-                     add_upper_threshold = 0.5, remove_lower_threshold = 0.1,
-                     remove_upper_threshold = 0.5, model_id = 'sentence-transformers/all-MiniLM-L6-v2', get_xy = False):
+def recommend_prompt(
+    prompt,
+    prompt_json,
+    embedding_fn = None,
+    add_lower_threshold = 0.3,
+    add_upper_threshold = 0.5,
+    remove_lower_threshold = 0.1,
+    remove_upper_threshold = 0.5,
+    umap_model = None
+):
     """
     Function that recommends prompts additions or removals.
 
     Args:
         prompt: The entered prompt text.
         prompt_json: Json file populated with embeddings.
-        api_url: API url for HF request.
-        headers: Content headers for HF request.
+        embedding_fn: Embedding function to convert prompt sentences into embeddings.
+        If None, uses all-MiniLM-L6-v2 run locally.
         add_lower_threshold: Lower threshold for sentence addition,
         the default value is 0.3.
         add_upper_threshold: Upper threshold for sentence addition,
@@ -169,7 +165,8 @@ def recommend_prompt(prompt, prompt_json, embedding_fn = None, add_lower_thresho
         the default value is 0.3.
         remove_upper_threshold: Upper threshold for sentence removal,
         the default value is 0.5.
-        model_id: Id of the model, the default value is all-MiniLM-L6-v2 model.
+        umap_model: Umap model used for visualization.
+        If None, the projected embeddings of input sentences will not be returned.
 
     Returns:
         Prompt values to add or remove.
@@ -178,24 +175,8 @@ def recommend_prompt(prompt, prompt_json, embedding_fn = None, add_lower_thresho
         Nothing.
     """
     if embedding_fn is None:
+        # Use all-MiniLM-L6-v2 locally by default
         embedding_fn = get_embedding_func('local', model_id='sentence-transformers/all-MiniLM-L6-v2')
-
-    if get_xy:
-        if(model_id == 'baai/bge-large-en-v1.5' ):
-            json_file = './prompt-sentences-main/prompt_sentences-bge-large-en-v1.5.json'
-            umap_model_file = './models/umap/intfloat/multilingual-e5-large/umap.pkl'
-        elif(model_id == 'intfloat/multilingual-e5-large'):
-            json_file = './prompt-sentences-main/prompt_sentences-multilingual-e5-large.json'
-            umap_model_file = './models/umap/intfloat/multilingual-e5-large/umap.pkl'
-        else: # fall back to all-minilm as default
-            json_file = './prompt-sentences-main/prompt_sentences-all-minilm-l6-v2.json'
-            umap_model_file = './models/umap/sentence-transformers/all-MiniLM-L6-v2/umap.pkl'
-
-        with open(umap_model_file, 'rb') as f:
-            umap_model = pickle.load(f)
-
-    if prompt_json is None:
-        prompt_json = json.load(open(json_file))
 
     # Output initialization
     out, out['input'], out['add'], out['remove'] = {}, {}, {}, {}
@@ -236,13 +217,9 @@ def recommend_prompt(prompt, prompt_json, embedding_fn = None, add_lower_thresho
                 'value': v['label'],
                 'prompt': v['prompts'][idx]['text'],
                 'similarity': value_sents_similarity[idx],
+                'x': v['prompts'][idx]['x'],
+                'y': v['prompts'][idx]['y']
             })
-            if get_xy:
-                items_to_add[-1].update({
-                    'x': v['prompts'][idx]['x'],
-                    'y': v['prompts'][idx]['y']
-                })
-
         out['add'] = items_to_add
 
     inp_sentence_embeddings = np.array([embedding_fn(sent) for sent in input_sentences])
@@ -254,7 +231,7 @@ def recommend_prompt(prompt, prompt_json, embedding_fn = None, add_lower_thresho
     # Recommendation of values to remove from the current prompt
     for sent_idx, sentence in enumerate(input_sentences):
         input_embedding = inp_sentence_embeddings[sent_idx]
-        if get_xy:
+        if umap_model:
             # Obtaining XY coords for input sentences from a parametric UMAP model
             if(len(prompt_json['negative_values'][0]['centroid']) == len(input_embedding) and sentence != ''):
                 embeddings_umap = umap_model.transform(np.expand_dims(pd.DataFrame(input_embedding).squeeze(), axis=0))
@@ -287,12 +264,9 @@ def recommend_prompt(prompt, prompt_json, embedding_fn = None, add_lower_thresho
                     'sentence_index': sent_idx,
                     'closest_harmful_sentence': v['prompts'][idx]['text'],
                     'similarity': value_sents_similarity[idx],
+                    'x': v['prompts'][idx]['x'],
+                    'y': v['prompts'][idx]['y']
                 })
-                if get_xy:
-                    items_to_remove[-1].update({
-                        'x': v['prompts'][idx]['x'],
-                        'y': v['prompts'][idx]['y']
-                    })
             out['remove'] = items_to_remove
 
     out['input'] = input_items
@@ -316,14 +290,19 @@ def recommend_prompt(prompt, prompt_json, embedding_fn = None, add_lower_thresho
     out['remove'] = out['remove'][0:5]
     return out
 
-def get_thresholds(prompts, prompt_json, embedding_fn = None, model_id = 'sentence-transformers/all-minilm-l6-v2'):
+def get_thresholds(
+    prompts,
+    prompt_json,
+    embedding_fn = None,
+):
     """
     Function that recommends thresholds given an array of prompts.
 
     Args:
         prompts: The array with samples of prompts to be used in the system.
         prompt_json: Sentences to be forwarded to the recommendation endpoint.
-        model_id: Id of the model, the default value is all-minilm-l6-v2 model.
+        embedding_fn: Embedding function to convert prompt sentences into embeddings.
+        If None, uses all-MiniLM-L6-v2 run locally.
 
     Returns:
         A map with thresholds for the sample prompts and the informed model.
@@ -339,7 +318,7 @@ def get_thresholds(prompts, prompt_json, embedding_fn = None, model_id = 'senten
     remove_similarities = []
 
     for p_id, p in enumerate(prompts):
-        out = recommend_prompt(p, prompt_json, embedding_fn, 0, 1, 0, 0, model_id) # Wider possible range
+        out = recommend_prompt(p, prompt_json, embedding_fn, 0, 1, 0, 0, None) # Wider possible range
 
         for r in out['add']:
             add_similarities.append(r['similarity'])
