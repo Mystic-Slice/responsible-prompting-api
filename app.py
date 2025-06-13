@@ -67,13 +67,20 @@ def index():
 @cross_origin()
 def recommend():
     user_ip = request.remote_addr
-    # hf_token, hf_url = get_credentials.get_credentials()
-    # api_url, headers = authenticate_api.authenticate_api(hf_token, hf_url)
     prompt_json, _ = recommendation_handler.populate_json()
     args = request.args
+    print("args list = ", args)
     prompt = args.get("prompt")
 
     model_id='sentence-transformers/all-MiniLM-L6-v2'
+
+    # Embeddings from HF API
+    # hf_token, hf_url = get_credentials.get_credentials()
+    # api_url, headers = authenticate_api.authenticate_api(hf_token, hf_url)
+    # api_url = f'https://router.huggingface.co/hf-inference/models/{model_id}/pipeline/feature-extraction'
+    # embedding_fn = recommendation_handler.get_embedding_func(inference='huggingface', model_id=model_id, api_url= api_url, headers = headers)
+
+    # Embeddings from local inference
     embedding_fn = recommendation_handler.get_embedding_func(inference='local', model_id=model_id)
 
     recommendation_json = recommendation_handler.recommend_prompt(prompt, prompt_json, embedding_fn, model_id=model_id, get_xy=True)
@@ -89,7 +96,6 @@ def get_thresholds():
     prompt_json = recommendation_handler.populate_json()
     model_id = 'sentence-transformers/all-MiniLM-L6-v2'
     args = request.args
-    #print("args list = ", args)
     prompt = args.get("prompt")
     thresholds_json = recommendation_handler.get_thresholds(prompt, prompt_json, api_url,
                                                             headers, model_id)
@@ -103,7 +109,9 @@ def recommend_local():
     args = request.args
     print("args list = ", args)
     prompt = args.get("prompt")
+
     embedding_fn = recommendation_handler.get_embedding_func(inference='local', model_id=model_id)
+
     local_recommendation_json = recommendation_handler.recommend_prompt(prompt, prompt_json, embedding_fn, model_id=model_id, get_xy=True)
     return local_recommendation_json
 
