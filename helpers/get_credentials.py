@@ -28,7 +28,7 @@ __version__ = "0.0.1"
 import os
 import sys
 
-def get_credentials():
+def get_hf_credentials():
     """
     Function that loads HF credentials from env file.
     The function exits the app if HF token is missing.
@@ -61,3 +61,28 @@ def get_credentials():
         print('Please include your HF_URL in the .env file')
         return hf_token, default_hf_url
     return hf_token, hf_url
+
+def get_replicate_credentials():
+    """
+    Function that loads Replicate credentials from env file.
+    The function exits the app if Replicate token is missing.
+
+    Args:
+        None.
+
+    Returns:
+        repl_token: personal Replicate token.
+
+    Raises:
+        ValueError when repl_token
+        values is missing or incorrect.
+    """
+    try:
+        repl_token = os.environ.get('REPLICATE_TOKEN')
+        if not repl_token or repl_token == '<include-token-here>':
+           raise ValueError
+    except:
+        print('Please include your REPLICATE_TOKEN in the .env file')
+        sys.exit(1)
+    
+    return repl_token
