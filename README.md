@@ -21,7 +21,7 @@ First, make sure you have:
 - A Hugging Face access token: https://huggingface.co/docs/hub/en/security-tokens
 
 > [!NOTE]  
-> Using models on [Replicate](https://replicate.com/) is also supported, but requires a billing account. On Replicate, you can access models like [Granite 3.3](https://replicate.com/ibm-granite/granite-3.3-8b-instruct), [Claude 3.7 Sonnet](https://replicate.com/anthropic/claude-3.7-sonnet), [GPT-4o](https://replicate.com/openai/gpt-4o), etc... that are not available on HuggingFace.
+> If you want to use models that are not available on HuggingFace such as [Granite 3.3](https://replicate.com/ibm-granite/granite-3.3-8b-instruct), [Claude 3.7 Sonnet](https://replicate.com/anthropic/claude-3.7-sonnet), or [GPT-4o](https://replicate.com/openai/gpt-4o), [Replicate](https://replicate.com/) is already supported. Just be aware that it requires a billing account. If there is another model hub you would like support for, you can open a pull request and the team will add it.
 
 ### Start the server:
 1. In your terminal, clone this repository and `cd` into `responsible-prompting-api` folder
