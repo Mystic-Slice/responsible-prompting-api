@@ -33,7 +33,10 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import os
+#os.environ['TRANSFORMERS_CACHE'] ="./models/allmini/cache"
+import os.path
 from sentence_transformers import SentenceTransformer
+import pickle
 
 def populate_json(json_file_path = './prompt-sentences-main/prompt_sentences-all-minilm-l6-v2.json',
                     existing_json_populated_file_path = './prompt-sentences-main/prompt_sentences-all-minilm-l6-v2.json'):
@@ -174,9 +177,20 @@ def recommend_prompt(
     Raises:
         Nothing.
     """
-    if embedding_fn is None:
-        # Use all-MiniLM-L6-v2 locally by default
-        embedding_fn = get_embedding_func('local', model_id='sentence-transformers/all-MiniLM-L6-v2')
+    if(model_id == 'baai/bge-large-en-v1.5' ):
+        json_file = './prompt-sentences-main/prompt_sentences-bge-large-en-v1.5.json'
+        umap_model_file = './models/umap/intfloat/multilingual-e5-large/umap.pkl'
+    elif(model_id == 'intfloat/multilingual-e5-large'):
+        json_file = './prompt-sentences-main/prompt_sentences-multilingual-e5-large.json'
+        umap_model_file = './models/umap/intfloat/multilingual-e5-large/umap.pkl'
+    else: # fall back to all-minilm as default
+        json_file = './prompt-sentences-main/prompt_sentences-all-minilm-l6-v2.json'
+        umap_model_file = './models/umap/sentence-transformers/all-MiniLM-L6-v2/umap.pkl'
+
+    with open(umap_model_file, 'rb') as f:
+        umap_model = pickle.load(f)
+
+    prompt_json = json.load( open( json_file ) )
 
     # Output initialization
     out, out['input'], out['add'], out['remove'] = {}, {}, {}, {}
@@ -229,17 +243,16 @@ def recommend_prompt(
     )
 
     # Recommendation of values to remove from the current prompt
-    for sent_idx, sentence in enumerate(input_sentences):
-        input_embedding = inp_sentence_embeddings[sent_idx]
-        if umap_model:
-            # Obtaining XY coords for input sentences from a parametric UMAP model
-            if(len(prompt_json['negative_values'][0]['centroid']) == len(input_embedding) and sentence != ''):
-                embeddings_umap = umap_model.transform(np.expand_dims(pd.DataFrame(input_embedding).squeeze(), axis=0))
-                input_items.append({
-                    'sentence': sentence,
-                    'x': str(embeddings_umap[0][0]),
-                    'y': str(embeddings_umap[0][1])
-                })
+    for sentence in input_sentences:
+        input_embedding = query(sentence, api_url, headers) # remote
+        # Obtaining XY coords for input sentences from a UMAP model
+        if(len(prompt_json['negative_values'][0]['centroid']) == len(input_embedding) and sentence != ''):
+            embeddings_umap = umap_model.transform(np.expand_dims(pd.DataFrame(input_embedding).squeeze(), axis=0))
+            input_items.append({
+                'sentence': sentence,
+                'x': str(embeddings_umap[0][0]),
+                'y': str(embeddings_umap[0][1])
+            })
 
         for value_idx, v in enumerate(prompt_json['negative_values']):
             # Dealing with values without prompts and making sure they have the same dimensions
@@ -335,3 +348,127 @@ def get_thresholds(
     thresholds['remove_higher_threshold'] = round(remove_similarities_df.describe([.9]).loc['90%', 'similarity'], 1)
 
     return thresholds
+
+def recommend_local(prompt, prompt_json, model_id, model_path = './models/all-MiniLM-L6-v2/', add_lower_threshold = 0.3,
+                     add_upper_threshold = 0.5, remove_lower_threshold = 0.1,
+                     remove_upper_threshold = 0.5):
+    """
+    Function that recommends prompts additions or removals
+    using a local model.
+
+    Args:
+        prompt: The entered prompt text.
+        prompt_json: Json file populated with embeddings.
+        model_id: Id of the local model.
+        model_path: Path to the local model.
+
+    Returns:
+        Prompt values to add or remove.
+
+    Raises:
+        Nothing.
+    """
+    if(model_id == 'baai/bge-large-en-v1.5' ):
+        json_file = './prompt-sentences-main/prompt_sentences-bge-large-en-v1.5.json'
+        umap_model_file = './models/umap/intfloat/multilingual-e5-large/umap.pkl'
+    elif(model_id == 'intfloat/multilingual-e5-large'):
+        json_file = './prompt-sentences-main/prompt_sentences-multilingual-e5-large.json'
+        umap_model_file = './models/umap/intfloat/multilingual-e5-large/umap.pkl'
+    else: # fall back to all-minilm as default
+        json_file = './prompt-sentences-main/prompt_sentences-all-minilm-l6-v2.json'
+        umap_model_file = './models/umap/sentence-transformers/all-MiniLM-L6-v2/umap.pkl'
+
+    with open(umap_model_file, 'rb') as f:
+        umap_model = pickle.load(f)
+
+    prompt_json = json.load( open( json_file ) )
+
+    # Output initialization
+    out, out['input'], out['add'], out['remove'] = {}, {}, {}, {}
+    input_items, items_to_add, items_to_remove = [], [], []
+
+    # Spliting prompt into sentences
+    input_sentences = split_into_sentences(prompt)
+
+    # Recommendation of values to add to the current prompt
+    # Using only the last sentence for the add recommendation
+    model = SentenceTransformer(model_path)
+    input_embedding = model.encode(input_sentences[-1])
+
+    for v in prompt_json['positive_values']:
+        # Dealing with values without prompts and makinig sure they have the same dimensions
+        if(len(v['centroid']) == len(input_embedding)):
+            if(get_similarity(pd.DataFrame(input_embedding), pd.DataFrame(v['centroid'])) > add_lower_threshold):
+                closer_prompt = -1
+                for p in v['prompts']:
+                    d_prompt = get_similarity(pd.DataFrame(input_embedding), pd.DataFrame(p['embedding']))
+                    # The sentence_threshold is being used as a ceiling meaning that for high similarities the sentence/value might already be presente in the prompt
+                    # So, we don't want to recommend adding something that is already there
+                    if(d_prompt > closer_prompt and d_prompt > add_lower_threshold and d_prompt < add_upper_threshold):
+                        closer_prompt = d_prompt
+                        items_to_add.append({
+                        'value': v['label'],
+                        'prompt': p['text'],
+                        'similarity': d_prompt,
+                        'x': p['x'],
+                        'y': p['y']})
+                out['add'] = items_to_add
+
+    # Recommendation of values to remove from the current prompt
+    i = 0
+
+    # Recommendation of values to remove from the current prompt
+    for sentence in input_sentences:
+        input_embedding = model.encode(sentence) # local
+        # Obtaining XY coords for input sentences from a UMAP model
+        if(len(prompt_json['negative_values'][0]['centroid']) == len(input_embedding) and sentence != ''):
+            embeddings_umap = umap_model.transform(np.expand_dims(pd.DataFrame(input_embedding).squeeze(), axis=0))
+            input_items.append({
+                'sentence': sentence,
+                'x': str(embeddings_umap[0][0]),
+                'y': str(embeddings_umap[0][1])
+            })
+
+        for v in prompt_json['negative_values']:
+        # Dealing with values without prompts and makinig sure they have the same dimensions
+            if(len(v['centroid']) == len(input_embedding)):
+                if(get_similarity(pd.DataFrame(input_embedding), pd.DataFrame(v['centroid'])) > remove_lower_threshold):
+                    closer_prompt = -1
+                    for p in v['prompts']:
+                        d_prompt = get_similarity(pd.DataFrame(input_embedding), pd.DataFrame(p['embedding']))
+                        # A more restrict threshold is used here to prevent false positives
+                        # The sentence_threhold is being used to indicate that there must be a sentence in the prompt that is similiar to one of our adversarial prompts
+                        # So, yes, we want to recommend the revolval of something adversarial we've found
+                        if(d_prompt > closer_prompt and d_prompt > remove_upper_threshold):
+                            closer_prompt = d_prompt
+                            items_to_remove.append({
+                            'value': v['label'],
+                            'sentence': sentence,
+                            'sentence_index': i,
+                            'closest_harmful_sentence': p['text'],
+                            'similarity': d_prompt,
+                            'x': p['x'],
+                            'y': p['y']})
+                    out['remove'] = items_to_remove
+        i += 1
+
+    out['input'] = input_items
+
+    out['add'] = sorted(out['add'], key=sort_by_similarity, reverse=True)
+    values_map = {}
+    for item in out['add'][:]:
+        if(item['value'] in values_map):
+            out['add'].remove(item)
+        else:
+            values_map[item['value']] = item['similarity']
+    out['add'] = out['add'][0:5]
+
+    out['remove'] = sorted(out['remove'], key=sort_by_similarity, reverse=True)
+    values_map = {}
+    for item in out['remove'][:]:
+        if(item['value'] in values_map):
+            out['remove'].remove(item)
+        else:
+            values_map[item['value']] = item['similarity']
+    out['remove'] = out['remove'][0:5]
+    return out
