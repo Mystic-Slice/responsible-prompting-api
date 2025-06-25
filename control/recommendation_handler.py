@@ -29,7 +29,6 @@ import requests
 import json
 import math
 import re
-import warnings
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
@@ -61,45 +60,31 @@ def populate_json(json_file_path = './prompt-sentences-main/prompt_sentences-all
     json_file = json_file_path
     if(os.path.isfile(existing_json_populated_file_path)):
         json_file = existing_json_populated_file_path
-    try:
-        prompt_json = json.load(open(json_file))
-        json_error = None
-        return prompt_json, json_error
-    except Exception as e:
-        json_error = e
-        print(f'Error when loading sentences json file: {json_error}')
-        prompt_json = None
-        return prompt_json, json_error
+    prompt_json = json.load(open(json_file))
+    return prompt_json
 
-def query(texts, api_url, headers):
-    """
-    Function that requests embeddings for a given sentence.
+def get_embedding_func(inference = 'huggingface', **kwargs):
+    if inference == 'local':
+        if 'model_id' not in kwargs:
+            raise TypeError("Missing required argument: model_id")
+        model = SentenceTransformer(kwargs['model_id'])
 
-    Args:
-        texts: The sentence or entered prompt text.
-        api_url: API url for HF request.
-        headers: Content headers for HF request.
+        def embedding_fn(texts):
+            return model.encode(texts).tolist()
 
-    Returns:
-        A json with the sentence embeddings.
-
-    Raises:
-        Warning: Warns about sentences that have more
-        than 256 words.
-    """
-    for t in texts:
-        n_words = len(re.split(r"\s+", t))
-        if(n_words > 256):
-            # warning in case of prompts longer than 256 words
-            warnings.warn("Warning: Sentence provided is longer than 256 words. Model all-MiniLM-L6-v2 expects sentences up to 256 words.")
-            warnings.warn("Word count:{}".format(n_words))
-    if('sentence-transformers/all-MiniLM-L6-v2' in api_url):
-        model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
-        out = model.encode(texts).tolist()
+    elif inference == 'huggingface':
+        if 'api_url' not in kwargs:
+            raise TypeError("Missing required argument: api_url")
+        if 'headers' not in kwargs:
+            raise TypeError("Missing required argument: headers")
+        
+        def embedding_fn(texts):
+            response = requests.post(kwargs['api_url'], headers=kwargs['headers'], json={"inputs": texts, "options":{"wait_for_model":True}})
+            return response.json()
     else:
-        response = requests.post(api_url, headers=headers, json={"inputs": texts, "options":{"wait_for_model":True}})
-        out = response.json()
-    return out
+        raise ValueError(f"Inference type {inference} is not supported. Please choose one of ['local', 'huggingface'].")
+    
+    return embedding_fn
 
 def split_into_sentences(prompt):
     """
@@ -119,27 +104,6 @@ def split_into_sentences(prompt):
     """
     sentences = re.split(r'(?<=[.!?]) +', prompt)
     return sentences
-
-
-def get_similarity(embedding1, embedding2):
-    """
-    Function that returns cosine similarity between
-    two embeddings.
-
-    Args:
-        embedding1: first embedding.
-        embedding2: second embedding.
-
-    Returns:
-        The similarity value.
-
-    Raises:
-        Nothing.
-    """
-    v1 = np.array( embedding1 ).reshape( 1, -1 )
-    v2 = np.array( embedding2 ).reshape( 1, -1 )
-    similarity = cosine_similarity( v1, v2 )
-    return similarity[0, 0]
 
 def get_distance(embedding1, embedding2):
     """
@@ -178,17 +142,24 @@ def sort_by_similarity(e):
     """
     return e['similarity']
 
-def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold = 0.3,
-                     add_upper_threshold = 0.5, remove_lower_threshold = 0.1,
-                     remove_upper_threshold = 0.5, model_id = 'sentence-transformers/all-minilm-l6-v2'):
+def recommend_prompt(
+    prompt,
+    prompt_json,
+    embedding_fn = None,
+    add_lower_threshold = 0.3,
+    add_upper_threshold = 0.5,
+    remove_lower_threshold = 0.1,
+    remove_upper_threshold = 0.5,
+    umap_model = None
+):
     """
     Function that recommends prompts additions or removals.
 
     Args:
         prompt: The entered prompt text.
         prompt_json: Json file populated with embeddings.
-        api_url: API url for HF request.
-        headers: Content headers for HF request.
+        embedding_fn: Embedding function to convert prompt sentences into embeddings.
+        If None, uses all-MiniLM-L6-v2 run locally.
         add_lower_threshold: Lower threshold for sentence addition,
         the default value is 0.3.
         add_upper_threshold: Upper threshold for sentence addition,
@@ -197,7 +168,8 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
         the default value is 0.3.
         remove_upper_threshold: Upper threshold for sentence removal,
         the default value is 0.5.
-        model_id: Id of the model, the default value is all-minilm-l6-v2 movel.
+        umap_model: Umap model used for visualization.
+        If None, the projected embeddings of input sentences will not be returned.
 
     Returns:
         Prompt values to add or remove.
@@ -231,28 +203,44 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
 
     # Recommendation of values to add to the current prompt
     # Using only the last sentence for the add recommendation
-    input_embedding = query(input_sentences[-1], api_url, headers)
-    for v in prompt_json['positive_values']:
-        # Dealing with values without prompts and makinig sure they have the same dimensions
-        if(len(v['centroid']) == len(input_embedding)):
-            if(get_similarity(pd.DataFrame(input_embedding), pd.DataFrame(v['centroid'])) > add_lower_threshold):
-                closer_prompt = -1
-                for p in v['prompts']:
-                    d_prompt = get_similarity(pd.DataFrame(input_embedding), pd.DataFrame(p['embedding']))
-                    # The sentence_threshold is being used as a ceiling meaning that for high similarities the sentence/value might already be presente in the prompt
-                    # So, we don't want to recommend adding something that is already there
-                    if(d_prompt > closer_prompt and d_prompt > add_lower_threshold and d_prompt < add_upper_threshold):
-                        closer_prompt = d_prompt
-                        items_to_add.append({
-                        'value': v['label'],
-                        'prompt': p['text'],
-                        'similarity': d_prompt,
-                        'x': p['x'],
-                        'y': p['y']})
-                out['add'] = items_to_add
+    input_embedding = embedding_fn(input_sentences[-1])
+    input_embedding = np.array(input_embedding)
 
-    # Recommendation of values to remove from the current prompt
-    i = 0
+    sentence_embeddings = np.array(
+        [v['centroid'] for v in prompt_json['positive_values']]
+    )
+
+    similarities_positive_sent = cosine_similarity(np.expand_dims(input_embedding, axis=0), sentence_embeddings)[0, :]
+
+    for value_idx, v in enumerate(prompt_json['positive_values']):
+        # Dealing with values without prompts and makinig sure they have the same dimensions
+        if(len(v['centroid']) != len(input_embedding)):
+            continue
+
+        if(similarities_positive_sent[value_idx] < add_lower_threshold):
+            continue
+
+        value_sents_similarity = cosine_similarity(
+            np.expand_dims(input_embedding, axis=0),
+            np.array([p['embedding'] for p in v['prompts']])
+        )[0, :]
+        closer_prompt_idxs = np.nonzero((add_lower_threshold < value_sents_similarity) & (value_sents_similarity < add_upper_threshold))[0]
+
+        for idx in closer_prompt_idxs:
+            items_to_add.append({
+                'value': v['label'],
+                'prompt': v['prompts'][idx]['text'],
+                'similarity': value_sents_similarity[idx],
+                'x': v['prompts'][idx]['x'],
+                'y': v['prompts'][idx]['y']
+            })
+        out['add'] = items_to_add
+
+    inp_sentence_embeddings = np.array([embedding_fn(sent) for sent in input_sentences])
+    pairwise_similarities = cosine_similarity(
+        inp_sentence_embeddings,
+        np.array([v['centroid'] for v in prompt_json['negative_values']])
+    )
 
     # Recommendation of values to remove from the current prompt
     for sentence in input_sentences:
@@ -266,28 +254,33 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
                 'y': str(embeddings_umap[0][1])
             })
 
-        for v in prompt_json['negative_values']:
-        # Dealing with values without prompts and makinig sure they have the same dimensions
-            if(len(v['centroid']) == len(input_embedding)):
-                if(get_similarity(pd.DataFrame(input_embedding), pd.DataFrame(v['centroid'])) > remove_lower_threshold):
-                    closer_prompt = -1
-                    for p in v['prompts']:
-                        d_prompt = get_similarity(pd.DataFrame(input_embedding), pd.DataFrame(p['embedding']))
-                        # A more restrict threshold is used here to prevent false positives
-                        # The sentence_threshold is being used to indicate that there must be a sentence in the prompt that is similiar to one of our adversarial prompts
-                        # So, yes, we want to recommend the removal of something adversarial we've found
-                        if(d_prompt > closer_prompt and d_prompt > remove_upper_threshold):
-                            closer_prompt = d_prompt
-                            items_to_remove.append({
-                            'value': v['label'],
-                            'sentence': sentence,
-                            'sentence_index': i,
-                            'closest_harmful_sentence': p['text'],
-                            'similarity': d_prompt,
-                            'x': p['x'],
-                            'y': p['y']})
-                    out['remove'] = items_to_remove
-        i += 1
+        for value_idx, v in enumerate(prompt_json['negative_values']):
+            # Dealing with values without prompts and making sure they have the same dimensions
+            if(len(v['centroid']) != len(input_embedding)):
+                continue
+            if(pairwise_similarities[sent_idx][value_idx] < remove_lower_threshold):
+                continue
+
+            # A more restrict threshold is used here to prevent false positives
+            # The sentence_threshold is being used to indicate that there must be a sentence in the prompt that is similiar to one of our adversarial prompts
+            # So, yes, we want to recommend the removal of something adversarial we've found
+            value_sents_similarity = cosine_similarity(
+                np.expand_dims(input_embedding, axis=0),
+                np.array([p['embedding'] for p in v['prompts']])
+            )[0, :]
+            closer_prompt_idxs = np.nonzero(value_sents_similarity > remove_upper_threshold)[0]
+
+            for idx in closer_prompt_idxs:
+                items_to_remove.append({
+                    'value': v['label'],
+                    'sentence': sentence,
+                    'sentence_index': sent_idx,
+                    'closest_harmful_sentence': v['prompts'][idx]['text'],
+                    'similarity': value_sents_similarity[idx],
+                    'x': v['prompts'][idx]['x'],
+                    'y': v['prompts'][idx]['y']
+                })
+            out['remove'] = items_to_remove
 
     out['input'] = input_items
 
@@ -310,14 +303,19 @@ def recommend_prompt(prompt, prompt_json, api_url, headers, add_lower_threshold 
     out['remove'] = out['remove'][0:5]
     return out
 
-def get_thresholds(prompts, prompt_json, api_url, headers, model_id = 'sentence-transformers/all-minilm-l6-v2'):
+def get_thresholds(
+    prompts,
+    prompt_json,
+    embedding_fn = None,
+):
     """
     Function that recommends thresholds given an array of prompts.
 
     Args:
         prompts: The array with samples of prompts to be used in the system.
         prompt_json: Sentences to be forwarded to the recommendation endpoint.
-        model_id: Id of the model, the default value is all-minilm-l6-v2 model.
+        embedding_fn: Embedding function to convert prompt sentences into embeddings.
+        If None, uses all-MiniLM-L6-v2 run locally.
 
     Returns:
         A map with thresholds for the sample prompts and the informed model.
@@ -325,14 +323,15 @@ def get_thresholds(prompts, prompt_json, api_url, headers, model_id = 'sentence-
     Raises:
         Nothing.
     """
-    # Array limits for retrieving the thresholds
-    # if( len( prompts ) < 10 or len( prompts ) > 30 ):
-    #     return -1
+
+    if embedding_fn is None:
+        embedding_fn = get_embedding_func('local', model_id='sentence-transformers/all-MiniLM-L6-v2')
+
     add_similarities = []
     remove_similarities = []
 
     for p_id, p in enumerate(prompts):
-        out = recommend_prompt(p, prompt_json, api_url, headers, 0, 1, 0, 0, model_id) # Wider possible range
+        out = recommend_prompt(p, prompt_json, embedding_fn, 0, 1, 0, 0, None) # Wider possible range
 
         for r in out['add']:
             add_similarities.append(r['similarity'])
