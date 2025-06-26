@@ -69,13 +69,14 @@
         </div>
 
     <script>
-        var modelId = '';
+        var selectedModel = '';
         document.addEventListener('DOMContentLoaded', () => {
             // Populate the different models options
             // id -> id of the model on HF, name -> name displayed to the user
             const models = [
-                { id: 'mistralai/Mistral-7B-Instruct-v0.3', name: 'Mistral 7B Instruct v0.3' },
-                { id: 'meta-llama/Llama-4-Scout-17B-16E-Instruct', name: 'Llama 4 Scout' },
+                { id: 'ibm-granite/granite-3.3-8b-instruct', name: 'Granite 3.3 8B Instruct', inference_provider: 'replicate'},
+                { id: 'mistralai/Mistral-7B-Instruct-v0.3', name: 'Mistral 7B Instruct v0.3', inference_provider: 'huggingface' },
+                { id: 'meta-llama/Llama-4-Scout-17B-16E-Instruct', name: 'Llama 4 Scout', inference_provider: 'huggingface'  },
             ];
             const modelSelect = document.getElementById('modelSelect');
 
@@ -87,12 +88,11 @@
             });
 
             // Set default selection
-            modelId = models[0].id;
+            selectedModel = models[0];
 
             // Record when model changes
             modelSelect.addEventListener('change', function() {
-                const selectedModel = models.find(model => model.id === this.value);
-                modelId = selectedModel.id;
+                selectedModel = models.find(model => model.id === this.value);
             });
         });
 

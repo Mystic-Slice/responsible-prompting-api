@@ -338,8 +338,11 @@ function generateResponse(rawText, chatId, sendBtnId) {
     });
     fullPrompt += "Assistant: ";
 
+    modelId = selectedModel.id;
+    inference_provider = selectedModel.inference_provider;
+
     $.ajax({
-        url: "/demo_inference?prompt=" + encodeURIComponent(fullPrompt) + "&model_id=" + encodeURIComponent(modelId),
+        url: "/demo_inference?prompt=" + encodeURIComponent(fullPrompt) + "&model_id=" + encodeURIComponent(modelId) + "&inference_provider=" + encodeURIComponent(inference_provider),
         dataType: "json",
         success: async function (data) {
             $("#typing").remove();
@@ -350,7 +353,7 @@ function generateResponse(rawText, chatId, sendBtnId) {
 
             const modelHeader = $("<div style='display: flex; flex-direction: row;'>")
                 .addClass("model-info")
-                .html(`<img src="./imgs/granite.svg" class='icon'/> <div style='display:flex; align-items: center;margin-left: 0.5rem'>${modelId}</div>`);
+                .html(`<img src="./imgs/granite.svg" class='icon'/> <div style='display:flex; align-items: center;margin-left: 0.5rem'>${modelId} (via ${inference_provider})</div>`);
             $(chatId).append(modelHeader);
 
             appendAssistantTurn("", chatId, "assistantBubble")

@@ -20,6 +20,9 @@ First, make sure you have:
 - A machine with python 3.9 installed
 - A Hugging Face access token: https://huggingface.co/docs/hub/en/security-tokens
 
+> [!NOTE]  
+> If you want to use models that are not available on HuggingFace such as [Granite 3.3](https://replicate.com/ibm-granite/granite-3.3-8b-instruct), [Claude 3.7 Sonnet](https://replicate.com/anthropic/claude-3.7-sonnet), or [GPT-4o](https://replicate.com/openai/gpt-4o), [Replicate](https://replicate.com/) is already supported. Just be aware that it requires a billing account. If there is another model hub you would like support for, you can open a pull request and the team will access it.
+
 ### Start the server:
 1. In your terminal, clone this repository and `cd` into `responsible-prompting-api` folder
 2. Create a virtual environment with `python -m venv <name-of-your-venv>`
@@ -31,7 +34,7 @@ First, make sure you have:
 > This usually solves most common issues.
 
 5. Rename the `env` to `.env` (please note the dot at the beginning)
-6. In the `.env` file, replace `<include-token-here>` with your Hugging Face access token:
+6. In the `.env` file, replace `<include-token-here>` with your Hugging Face (or Replicate) access token:
 ```
 HF_TOKEN=<include-token-here>
 ```
