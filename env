@@ -1,2 +1,3 @@
 HF_TOKEN=<include-token-here>
 HF_URL=https://api-inference.huggingface.co/models/
+REPLICATE_TOKEN=<include-token-here>

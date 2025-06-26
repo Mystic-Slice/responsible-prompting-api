@@ -30,7 +30,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from flask_restful import Resource, Api, reqparse
 import control.recommendation_handler as recommendation_handler
-from helpers import get_credentials, authenticate_api, save_model
+from helpers import get_credentials, authenticate_api, save_model, inference
 import config as cfg
 import requests
 import logging
@@ -78,7 +78,7 @@ def recommend():
         umap_model = pickle.load(f)
 
     # Embeddings from HF API
-    # hf_token, hf_url = get_credentials.get_credentials()
+    # hf_token, hf_url = get_credentials.get_hf_credentials()
     # api_url, headers = authenticate_api.authenticate_api(hf_token, hf_url)
     # api_url = f'https://router.huggingface.co/hf-inference/models/{model_id}/pipeline/feature-extraction'
     # embedding_fn = recommendation_handler.get_embedding_func(inference='huggingface', model_id=model_id, api_url= api_url, headers = headers)
@@ -97,7 +97,7 @@ def recommend():
 @app.route("/get_thresholds", methods=['GET'])
 @cross_origin()
 def get_thresholds():
-    hf_token, hf_url = get_credentials.get_credentials()
+    hf_token, hf_url = get_credentials.get_hf_credentials()
     api_url, headers = authenticate_api.authenticate_api(hf_token, hf_url)
     prompt_json = recommendation_handler.populate_json()
     args = request.args
@@ -147,49 +147,25 @@ def log():
 def demo_inference():
     args = request.args
 
-    model_id = args.get('model_id', default="meta-llama/Llama-4-Scout-17B-16E-Instruct")
+    inference_provider = args.get('inference_provider', default='replicate')
+    model_id = args.get('model_id', default="ibm-granite/granite-3.3-8b-instruct")
     temperature = args.get('temperature', default=0.5)
     max_new_tokens = args.get('max_new_tokens', default=1000)
 
-    hf_token, _ = get_credentials.get_credentials()
-
     prompt = args.get('prompt')
 
-    API_URL = "https://router.huggingface.co/together/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {hf_token}",
-    }
-
-    response = requests.post(
-        API_URL,
-        headers=headers, 
-        json={
-            "messages": [
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": prompt
-                        },
-                    ]
-                }
-            ],
-            "model": model_id,
-            'temperature': temperature,
-            'max_new_tokens': max_new_tokens,
-        }
-    )
     try:
-        response = response.json()["choices"][0]["message"]
+        response = inference.INFERENCE_HANDLER[inference_provider](prompt, model_id, temperature, max_new_tokens)
         response.update({
+            'inference_provider': inference_provider,
             'model_id': model_id,
             'temperature': temperature,
             'max_new_tokens': max_new_tokens,
         })
+
         return response
     except:
-        return response.text, response.status_code
+        return "Model Inference failed.", 500
 
 if __name__=='__main__':
     debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
