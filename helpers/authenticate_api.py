@@ -19,9 +19,9 @@
 Python helper function to authenticate in HF API.
 """
 
-__author__ = "Vagner Santana, Melina Alberio, Cassia Sanctos and Tiago Machado"
+__author__ = "Vagner Santana, Melina Alberio, Cassia Sanctos, Ashwath Vaithinathan Aravindan, Luan Soares de Souza and Tiago Machado"
 __copyright__ = "IBM Corporation 2024"
-__credits__ = ["Vagner Santana, Melina Alberio, Cassia Sanctos, Tiago Machado"]
+__credits__ = ["Vagner Santana, Melina Alberio, Cassia Sanctos, Ashwath Vaithinathan Aravindan, Luan Soares de Souza, Tiago Machado"]
 __license__ = "Apache 2.0"
 __version__ = "0.0.1"
 
